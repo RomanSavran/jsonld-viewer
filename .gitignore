@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/now.json
 /.pnp
 .pnp.js
 
