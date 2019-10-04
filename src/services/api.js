@@ -6,11 +6,7 @@ export default class GithubApi {
     getData = async (pathToFile) => {
         const url = this._createURL(pathToFile);
 
-        const res = await fetch(url, {
-            headers: {
-                'Authorization': 'token ee615be4190ff2aef2760b6b8709fd87edced7e0',
-            }
-        });
+        const res = await fetch(url);
 
         if (!res.ok) {
             throw new Error(`Could not fetch ${url}, received ${res.status}`);
@@ -20,18 +16,13 @@ export default class GithubApi {
     }
 
     getDetails = async (contextURL, vocabURL, classDefinitionURL) => {
-        const options = {
-            headers: {
-                'Authorization': 'token ee615be4190ff2aef2760b6b8709fd87edced7e0'
-            }
-        }
-        const contextRes =  await fetch(this._createURL(contextURL), options);
+        const contextRes =  await fetch(this._createURL(contextURL));
         const contextData = await contextRes.json();
 
-        const vocabRes = await fetch(this._createURL(vocabURL), options);
+        const vocabRes = await fetch(this._createURL(vocabURL));
         const vocabData = await vocabRes.json();
 
-        const classDefinitionRes = await fetch(this._createURL(classDefinitionURL), options);
+        const classDefinitionRes = await fetch(this._createURL(classDefinitionURL));
         const classDefinitionData = await classDefinitionRes.json();
         
         return {
