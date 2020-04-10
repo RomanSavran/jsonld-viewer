@@ -10,6 +10,7 @@ import CopyTooltip from '../CopyTooltip';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 type InfoProps = {
     label: string,
@@ -70,9 +71,11 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         ul: {
-            display: 'flex',
+            display: 'inline-flex',
             flexDirection: 'column',
-            alignItems: 'flex-start'
+            alignItems: 'center',
+            margin: 0,
+            listStyle: 'none',
         },
         ulLink: {
             fontSize: 14,
@@ -90,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         li: {
-            marginBottom: 15,
+            marginBottom: 5,
             padding: '2px 10px',
             fontSize: 14,
             background: 'rgb(196, 203, 216)',
@@ -121,6 +124,9 @@ const useStyles = makeStyles((theme: Theme) =>
         icon: {
             width: 18,
             height: 18,
+        },
+        arrowIcon: {
+            marginBott: 5
         }
     })
 );
@@ -190,7 +196,7 @@ const Info: React.FC<InfoProps> = (props) => {
                     <p className={classes.text}>{comment}</p>
                 </div>
                 <div className={classes.descriptionItem}>
-                    <h4 className={classes.itemTitle}>Superclasses ({superclasses.length})</h4>
+                    <h4 className={classes.itemTitle}>{t("Parent classes")} ({superclasses.length})</h4>
                     <ul className={classes.ul}>
                         {
                             superclasses
@@ -200,17 +206,25 @@ const Info: React.FC<InfoProps> = (props) => {
                                     const isContext: boolean = mainPath.split('/').includes('Context');
 
                                     return (
-                                        <li
-                                            className={classes.li}
+                                        <React.Fragment
                                             key={to}
                                         >
-                                            <Link
-                                                className={classes.ulLink}
-                                                to={`${mainPath}${to}`.concat(isContext ? '/' : '')}
+                                            <li
+                                                className={classes.li}
                                             >
-                                                {item}
-                                            </Link>
-                                        </li>
+                                                <Link
+                                                    className={classes.ulLink}
+                                                    to={`${mainPath}${to}`.concat(isContext ? '/' : '')}
+                                                >
+                                                    {item}
+                                                </Link>
+                                            </li>
+                                            {
+                                                array.length - 1 !== index ? (
+                                                    <li className={classes.arrowIcon}><ArrowDownwardIcon /></li>
+                                                ) : null
+                                            }
+                                        </React.Fragment>
                                     )
                                 })
                         }

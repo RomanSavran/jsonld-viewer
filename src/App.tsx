@@ -5,7 +5,7 @@ import {
 	Route,
 	Redirect
 } from 'react-router-dom';
-import { RoutesContext } from './context/RoutesContext';
+import { RoutesContextProvider } from './context/RoutesContext';
 import {
 	ClassesHigherarchy,
 	ClassesGrid,
@@ -21,20 +21,17 @@ import ServiceAPI from './services/api';
 import Spinner from './components/Spinner';
 import { Theme } from '@material-ui/core';
 import {
-	modifyClass,
-	ClassItemType,
 	modifyIdElement,
 	modifyProps,
 	IdElementType,
 	PointersType,
-	PropertyItemType
+	PropertyItemType,
+	modifyClassElement
 } from './utils/helpers';
 import TopBar from './components/TopBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { Error404 } from './components/Errors';
-import { useTranslation } from 'react-i18next';
-import { Base64 } from 'js-base64';
-import {keyBy} from 'lodash';
+import { keyBy } from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -54,53 +51,75 @@ export function App() {
 		loading: true,
 		hasError: false
 	});
-	const {i18n} = useTranslation();
-	const currentLanguage: string = i18n.language;
-	const [currentPath, setCurrentPath] = useState
-		<'classes-hierarchy' |
-			'classes-grid' |
-			'properties-grid'>
-		('classes-hierarchy');
-
-	const handleChangeCurrentPath = (path: 'classes-hierarchy' | 'classes-grid' | 'properties-grid') => {
-		setCurrentPath(path);
-	};
 
 	useEffect(() => {
 		let mounted = false;
-		if (!mounted) {
-			ServiceAPI.getOnto()
-				.then(data => {
+
+		ServiceAPI.getData('/v1/')
+			.then(data => {
+				if (!mounted) {
 					setValue({
-						data: JSON.parse(Base64.decode(data.content)),
+						data,
 						loading: false,
 						hasError: false
 					})
-				})
-				.catch(err => {
-					console.error(err);
+				}
+			})
+			.catch(err => {
+				if (!mounted) {
 					setValue({
 						data: [],
 						loading: false,
 						hasError: true
 					})
-				})
+				}
+			})
+
+		return () => {
+			mounted = true;
 		}
 	}, []);
 
 	if (value.loading) return <Spinner />
 
 	const { data } = value;
-	const classesData: ClassItemType[] = [];
+	const classesList: Array<{ [key: string]: string }> = [
+		{
+			url: '/v1/Context/DataProductContext/',
+			id: 'DataProductContext',
+			labelEn: '',
+			labelFi: '',
+			commentEn: '',
+			commentFi: '',
+			subClass: '',
+		},
+		{
+			url: '/v1/Context/DataProductContext/SensorDataProductContext/',
+			id: 'SensorDataProductContext',
+			labelEn: '',
+			labelFi: '',
+			commentEn: '',
+			commentFi: '',
+			subClass: 'DataProductContext'
+		},
+		{
+			url: '/v1/Context/DataProductContext/LtifDataProductContext/',
+			id: 'LtifDataProductContext',
+			labelEn: '',
+			labelFi: '',
+			commentEn: '',
+			commentFi: '',
+			subClass: 'DataProductContext'
+		}
+	];
 	const propertiesData: [] = [];
 	const otherData: IdElementType[] = [];
 
 	data.forEach(element => {
 		if ('@type' in element) {
 			const type: string = element['@type'][0];
-
 			if (type.includes('owl#Class')) {
-				classesData.push(modifyClass(element, currentLanguage));
+				classesList.push(modifyClassElement(element));
 			} else if (type.includes('owl#DatatypeProperty')) {
 				propertiesData.push(element)
 			}
@@ -110,36 +129,37 @@ export function App() {
 	});
 
 	const modifiedOtherData: PointersType = keyBy(otherData, 'id');
-	const propData: PropertyItemType[] = propertiesData.map((item: any) => modifyProps(item, modifiedOtherData));
+	const propData: Array<{[key: string]: any}> = propertiesData.map((item: any) => modifyProps(item, modifiedOtherData));
 
 	return (
 		<Router>
-			<RoutesContext.Provider
-				value={{
-					currentPath,
-					handleChangeCurrentPath
-				}}
-			>
+			<RoutesContextProvider>
 				<TopBar />
 				<Breadcrumbs />
 				<div className={classes.container}>
 					<Switch>
 						<Route exact path="/">
-							<Redirect to="/classes-hierarchy" />
+							<Redirect to="/v1/" />
 						</Route>
-						<Route path="/classes-hierarchy" exact render={() => (
+						<Route path="/v1/" exact render={() => (
 							<ClassesHigherarchy
-								classesData={classesData}
+								classesList={classesList}
 							/>
 						)} />
 						<Route path="/classes-grid" exact render={() => (
 							<ClassesGrid
-								classesData={classesData}
+								classesList={classesList}
 							/>
 						)} />
 						<Route path="/v1/Context/*" render={() => (
 							<ClassesDetails
-								classesData={classesData}
+								classesList={classesList}
+								propData={propData}
+							/>
+						)} />
+						<Route path="/v1/Schema/*" render={() => (
+							<ClassesDetails
+								classesList={classesList}
 								propData={propData}
 							/>
 						)} />
@@ -147,21 +167,22 @@ export function App() {
 							const isClass = match.url.split('/')
 								.some((s: string) => {
 									return s === 'Identity' ||
-											s === 'Link' || 
-											s === 'PhysicalProperty' ||
-											s === 'Technical' ||
-											s === 'UnitOfMeasure';
+										s === 'Link' ||
+										s === 'PhysicalProperty' ||
+										s === 'Technical' ||
+										s === 'UnitOfMeasure' ||
+										s === 'DataProductContext';
 								})
 							return isClass ? (
-								<ClassesDetails classesData={classesData} propData={propData}/>
+								<ClassesDetails classesList={classesList} propData={propData} />
 							) : (
-								<PropertyDetails classesData={classesData} propData={propData}/>
-							)
+									<PropertyDetails classesList={classesList} propData={propData} />
+								)
 						}} />
 						<Route path="/v1/ClassDefinitions/*" render={() => (
 							<ClassesDetails
 								propData={propData}
-								classesData={classesData}
+								classesList={classesList}
 							/>
 						)} />
 						<Route path="/properties-grid" exact render={() => (
@@ -173,7 +194,7 @@ export function App() {
 						<Redirect to="/404" />
 					</Switch>
 				</div>
-			</RoutesContext.Provider>
+			</RoutesContextProvider>
 		</Router>
 
 	)

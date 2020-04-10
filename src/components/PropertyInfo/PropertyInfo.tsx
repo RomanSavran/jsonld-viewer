@@ -6,20 +6,20 @@ import Table from '../Table';
 type PropertyInfoProp = {
     data: any,
     id: string,
-    classesData: ClassItemType[]
+    classesList: Array<{[key: string]: string}>
 }
 
 const headers: Array<{id: string, label: string}> = [
     {id: 'id', label: 'class'},
-    {id: 'subClass', label: 'subClass'},
-    {id: 'comment', label: 'Comment'}
+    {id: 'subClass', label: 'Parent classes'},
+    {id: 'comment', label: 'Description'}
 ]
 
 const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
     const {
         data,
         id,
-        classesData
+        classesList
     } = props;
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
     const [orderBy, setOrderBy] = useState('id');
@@ -37,7 +37,7 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
     } = data;
     const propLink: string = [...superclasses, id].join('/');
     const uri: string = `https://standards-ontotest.oftrust.net/v1/Vocabulary/${propLink}`
-    const currentClasses: ClassItemType[] = classesData.filter(cls => domain.includes(cls.id));
+    const currentClasses: Array<{[key: string]: string}> = classesList.filter(cls => domain.includes(cls.id));
 
     return (
         <div>

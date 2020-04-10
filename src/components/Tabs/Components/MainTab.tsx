@@ -294,7 +294,7 @@ const MainTab: React.FC<MainTabProps> = (props) => {
 					</div>
 					<div>
 						<CopyTooltip
-							copyText={JSON.stringify(content)}
+							copyText={JSON.stringify(content, undefined, '\t')}
 							placement="top"
 						>
 							<CopyBtn classes={clsx(classes.downloadBtn, classes.copyBtn)}>

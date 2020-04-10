@@ -24,11 +24,10 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
         path
     } = props;
     const [value, setValue] = useState({
-        data: null,
+        data: {},
         loading: true,
         error: false
     });
-    const currentPath: string = path.split('/').filter(s => !!s).join('/');
     const id: string = path
         .split('/')
         .filter(s => !!s)
@@ -37,28 +36,36 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
     useEffect(() => {
         let mounted = false;
 
-        SystemAPI.getData(`/${currentPath}`)
-            .then(data => {
-                if (!mounted) {
-                    if (typeof data === 'number') {
-                        setValue(prevValue => ({
-                            ...prevValue,
-                            error: true
-                        }))
-                    } else {
-                        setValue({
-                            data,
-                            loading: false,
-                            error: false
-                        })
+        if (!['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id)) {
+            SystemAPI.getData(path)
+                .then(data => {
+                    if (!mounted) {
+                        if (typeof data === 'number') {
+                            setValue(prevValue => ({
+                                ...prevValue,
+                                error: true
+                            }))
+                        } else {
+                            setValue({
+                                data,
+                                loading: false,
+                                error: false
+                            })
+                        }
                     }
-                }
+                })
+        } else {
+            setValue({
+                data: {},
+                loading: false,
+                error: false
             })
+        }
 
         return () => {
             mounted = true;
         }
-    }, [path]);
+    }, [path, id]);
 
     if (value.error) return <Error404 />
     if (value.loading && !value.error) return <Spinner />
@@ -74,13 +81,13 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
         .sort()
         .reduce((acc, current) => ({...acc, [current]: ""}), {});
 
-    const initObj: {[key: string]: string} = {
+    const initObj: {[key: string]: string} = !['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id) ? {
         "@context": `https://standards-ontotest.oftrust.net${path}`,
         "id": "",
         "data": "",
         "metadata": "",
         ...parents
-    };
+    } : {};
 
     const data: ResultData = Object.keys(properties).reduce(
         (acc: any, current) => {

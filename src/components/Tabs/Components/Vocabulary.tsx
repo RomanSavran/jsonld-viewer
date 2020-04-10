@@ -5,7 +5,6 @@ import MainTab from './MainTab';
 import mdFileCV from '../../../assets/context.md';
 import sizeof from 'object-sizeof';
 import { Error404 } from '../../Errors';
-import { Base64 } from 'js-base64';
 
 type VocabularyProps = {
     path: string
@@ -31,38 +30,47 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
         error: false
     });
     const [mdFile, setMDFile] = useState<string | null>(null);
-    const id = path.split('/').pop();
-    
+    const id = path.split('/').pop() || '';
+
     useEffect(() => {
         let mounted = false;
 
-        SystemAPI.getData(path)
-            .then(data => {
-                if (!mounted) {
-                    if (data === 404 || typeof data === 'number') {
-                        setValue(prevValue => ({
-                            ...prevValue,
-                            error: true
-                        }))
-                    } else {
-                        const currentData = JSON.parse(Base64.decode(data.content));
-                        const sloc = JSON.stringify(currentData, undefined, 2);
-                        const size = (sizeof(currentData) / 1000).toFixed(2);
-                        setValue({
-                            content: currentData,
-                            size,
-                            sloc: sloc.split('\n').length,
-                            loading: false,
-                            error: false
-                        })
+        if (!['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id)) {
+            SystemAPI.getData(path)
+                .then(data => {
+                    if (!mounted) {
+                        if (data === 404 || typeof data === 'number') {
+                            setValue(prevValue => ({
+                                ...prevValue,
+                                error: true
+                            }))
+                        } else {
+                            const sloc = JSON.stringify(data, undefined, 2);
+                            const size = (sizeof(data) / 1000).toFixed(2);
+                            setValue({
+                                content: data,
+                                size,
+                                sloc: sloc.split('\n').length,
+                                loading: false,
+                                error: false
+                            })
+                        }
                     }
-                }
+                })
+        } else {
+            setValue({
+                content: {},
+                size: '0',
+                sloc: 0,
+                loading: false,
+                error: false
             })
+        }
 
         return () => {
             mounted = true;
         }
-    }, [path]);
+    }, [path, id]);
 
     useEffect(() => {
         fetch(mdFileCV)

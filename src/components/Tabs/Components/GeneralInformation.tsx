@@ -55,8 +55,8 @@ type GeneralInformationTypes = {
 }
 
 const headers: Array<{id: string, label: string}> = [
+	{id: 'category', label: 'Property category'},
 	{id: 'id', label: 'Property'},
-	{id: 'category', label: 'Category'},
 	{id: 'label', label: 'Label'},
 	{id: 'comment', label: 'Description'},
 	{id: 'range', label: 'Range'}

@@ -1,13 +1,35 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-type RoutesContext = {
-    currentPath: 'classes-hierarchy' | 'classes-grid' | 'properties-grid',
-    handleChangeCurrentPath: (path: 'classes-hierarchy' | 'classes-grid' | 'properties-grid') => void
+type RoutesContextProps = {
+    children: React.ReactNode
 }
 
-const RoutesContext = React.createContext<RoutesContext>({
-    currentPath: 'classes-hierarchy',
-    handleChangeCurrentPath: () => {},
-});
+const RoutesContext = React.createContext<any>(null)
 
-export {RoutesContext};
+const RoutesContextProvider: React.FC<RoutesContextProps> = ({
+    children
+}) => {
+    const [currentPath, setCurrentPath] = useState<'classes-hierarchy' | 'classes-grid' | 'properties-grid'>(
+        'classes-hierarchy'
+    );
+
+    const handleChangeCurrentPath = (path: 'classes-hierarchy' | 'classes-grid' | 'properties-grid') => {
+        setCurrentPath(path)
+    }
+
+    return (
+        <RoutesContext.Provider
+            value={{
+                currentPath,
+                handleChangeCurrentPath
+            }}
+        >
+            {children}
+        </RoutesContext.Provider>
+    )
+}
+
+export {
+    RoutesContext,
+    RoutesContextProvider,
+};

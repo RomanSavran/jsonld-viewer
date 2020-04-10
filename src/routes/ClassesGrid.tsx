@@ -1,26 +1,25 @@
 import React, {useState, useContext, useEffect} from 'react';
+import { useTranslation } from 'react-i18next';
 import { RoutesContext } from '../context/RoutesContext';
-import { ClassItemType } from '../utils/helpers';
 import Table from '../components/Table';
 
 type ClassesGridTypes = {
-	classesData: ClassItemType[]
+	classesList: Array<{[key: string]: string}>
 }
 
 const headers = [
-    {id: 'id', label: '@id'},
-    {id: 'type', label: '@type'},
-    {id: 'subClass', label: 'subClassOf'},
-    {id: 'label', label: 'Label'},
-    {id: 'comment', label: 'Comment'},
-    {id: 'sameAs', label: 'Same As'},
-    {id: 'equivalentClass', label: 'Equivalent Class'}
+    {id: 'id', label: 'Class'},
+    {id: 'subClass', label: 'Parent Class'},
+    {id: 'labelEn', label: 'Label'},
+    {id: 'commentEn', label: 'Description'},
 ]
 
-const ClassesGrid: React.FC<ClassesGridTypes> = ({classesData}) => {
+const ClassesGrid: React.FC<ClassesGridTypes> = ({ classesList }) => {
     const {handleChangeCurrentPath} = useContext(RoutesContext);
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
     const [orderBy, setOrderBy] = useState('id');
+    const { i18n } = useTranslation();
+    const language = i18n.language;
 
     useEffect(() => {
         handleChangeCurrentPath('classes-grid');
@@ -32,13 +31,22 @@ const ClassesGrid: React.FC<ClassesGridTypes> = ({classesData}) => {
         setOrderBy(property);
     }
 
+    const headersByLang = language === 'en' ? headers : [
+        {id: 'id', label: 'Class'},
+        {id: 'subClass', label: 'Parent Class'},
+        {id: 'labelEn', label: 'Label (en)'},
+        {id: 'labelFi', label: 'Label (fi)'},
+        {id: 'commentEn', label: 'Description'},
+        {id: 'commentFi', label: 'Description (fi)'}
+    ]
+
     return (
         <Table 
             handleRequestSort={handleRequestSort}
             order={order}
             orderBy={orderBy}
-            data={classesData}
-            headers={headers}
+            data={classesList}
+            headers={headersByLang}
         />
     )
 }

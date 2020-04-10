@@ -1,16 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
 import { RoutesContext } from '../context/RoutesContext';
-import { PropertyItemType, extractTextForGrid } from '../utils/helpers';
+import { extractTextForGrid } from '../utils/helpers';
 import { useTranslation } from 'react-i18next';
 import Table from '../components/Table';
 
 type PropertiesGridTypes = {
-	propertiesData: PropertyItemType[]
+	propertiesData: Array<{[key: string]: any}>
 }
 
 const headers = [
-    {id: 'id', label: '@id'},
-    {id: 'category', label: 'Category'},
+    {id: 'category', label: 'Property category'},
+    {id: 'id', label: 'Property'},
     {id: 'label', label: 'Label'},
     {id: 'comment', label: 'Comment'},
     {id: 'domain', label: 'Domain'},
@@ -34,12 +34,11 @@ const PropertiesGrid: React.FC<PropertiesGridTypes> = ({propertiesData}) => {
         setOrderBy(property);
     }
 
-    const modifiedData = propertiesData.map((item: PropertyItemType) => {
+    const modifiedData = propertiesData.map(item => {
         return {
             ...item,
             label: extractTextForGrid(item, language, 'label'),
             comment: extractTextForGrid(item, language, 'comment'),
-            domain: item.domain ? item.domain.join(', ') : ''
         }
     });
 

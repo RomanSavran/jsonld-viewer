@@ -193,7 +193,7 @@ const ContentViewer: React.FC<ContentViewerTypes> = (props) => {
                         ) : null}
                         <CopyTooltip
                             placement="top"
-                            copyText={JSON.stringify(content)}
+                            copyText={JSON.stringify(content, undefined, '\t')}
                         >
                             <CopyBtn classes={clsx(classes.downloadBtn, classes.copyBtn)}>{t('Copy')}</CopyBtn>
                         </CopyTooltip>

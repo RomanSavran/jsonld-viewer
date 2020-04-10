@@ -1,16 +1,16 @@
 import React from 'react';
 import PropertyInfo from '../components/PropertyInfo';
 import {useLocation} from 'react-router-dom';
-import {ClassItemType, extractTextForGrid} from '../utils/helpers';
+import { extractTextForGrid} from '../utils/helpers';
 import { useTranslation } from 'react-i18next';
 import { Error404 } from '../components/Errors';
 
 type PropertyDetailsTypes = {
-    classesData: ClassItemType[],
+    classesList: Array<{[key: string]: string}>,
     propData: any
 }
 
-const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesData, propData}) => {
+const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesList, propData}) => {
     const {t, i18n} = useTranslation();
     const location = useLocation();
     const id: string = location.pathname.split('/').pop() || '';
@@ -30,7 +30,7 @@ const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesData, propData}
         <PropertyInfo 
             data={data}
             id={id}
-            classesData={classesData}
+            classesList={classesList}
         />
     )
 };

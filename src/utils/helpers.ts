@@ -1,4 +1,5 @@
 import { values, has, get } from 'lodash';
+import sizeof from 'object-sizeof';
 
 type TextType = {
     '@language': 'en-us' | 'fi-fi',
@@ -35,7 +36,7 @@ export type PropertyItemType = {
     comment: [{comment: TextType[]}] | null,
     label: [{label: TextType[]}] | null,
     range?: string,
-    domain: string[] | null
+    domain: Array<any>
 }
 
 export type NodeType = {
@@ -63,56 +64,43 @@ export type PointersType = {
     [key: string]: IdElementType
 }
 
-export function modifyClass(item: any, language: string) {
-    const splitter: string = 'v1/Vocabulary/';
-    const commentKey: string = 'http://www.w3.org/2000/01/rdf-schema#comment';
-    const labelKey: string = 'http://www.w3.org/2000/01/rdf-schema#label';
-    const lang: 'en-us' | 'fi-fi' = language === 'en' ? 'en-us' : 'fi-fi';
+function extractTextData<T extends object>(element: T, key: string, lang: 'en-us' | 'fi-fi') {
+    const langObj = has(element, key) ? get(element, key).find((item: TextType) => get(item, '@language') === lang) : null;
 
-    const partialPath: string = item['@id'].split(splitter).pop();
+    return langObj ? get(langObj, '@value') : '';
+}
+
+export function modifyClassElement(classElement: any) {
+    const splitter = 'v1/Vocabulary/';
+    const commentKey = 'http://www.w3.org/2000/01/rdf-schema#comment';
+    const labelKey = 'http://www.w3.org/2000/01/rdf-schema#label';
+    const parentKey = 'http://www.w3.org/2000/01/rdf-schema#subClassOf';
+
+    const partialPath: string = get(classElement, '@id').split(splitter).pop() || '';
     const id: string = partialPath.split('/').pop() || '';
-    const type: string = item['@type'][0].split('http://www.w3.org/2002/07/').pop();
-    let label = '';
-    let comment = ''
-
-    if (lang !== 'en-us') {
-        const labelFi = has(item, labelKey) ? get(item, labelKey).find((k: TextType) => get(k, '@language') === lang) : null;
-        const labelEn = has(item, labelKey) ? get(item, labelKey).find((k: TextType) => get(k, '@language') === 'en-us') : null;
-        const commentFi = has(item, commentKey) ? get(item, commentKey).find((k: TextType) => get(k, '@language') === lang) : null
-        const commentEn = has(item, commentKey) ? get(item, commentKey).find((k: TextType) => get(k, '@language') === 'en-us') : null;
-        
-        label = labelEn && labelFi ? `${get(labelFi, '@value')} (${get(labelEn, '@value')})` :
-                labelEn && !labelFi ? `Ei etikettiä (${get(labelEn, '@value')})` : 'Ei etikettiä';
-        comment = commentEn && commentFi ? `${get(commentFi, '@value')} (${get(commentEn, '@value')})` :
-                    commentEn && !commentFi ? `Ei kuvausta (${get(commentEn, '@value')})` : 'Ei kuvausta';
-    } else {
-        const labelObject: TextType | null = get(item, labelKey) ? 
-            get(item, labelKey).find((k: any) => {
-                return get(k, '@language') === lang
-            }) : null;
-        const commentObject: TextType | null = get(item, commentKey) ? 
-            get(item, commentKey).find((k: any) => {
-                return get(k, '@language') === lang;
-            }) : null;
-        label = labelObject ? get(labelObject, '@value') : '';
-        comment = commentObject ? get(commentObject, '@value') : '';
-    }
-    
-    const subClass: string = 'http://www.w3.org/2000/01/rdf-schema#subClassOf' in item ? item['http://www.w3.org/2000/01/rdf-schema#subClassOf'].map((k: any) => k['@id'].split(splitter).join('').split('/').pop()).join(', ') : '';
-    const isContext = partialPath
+    const isContext: boolean = partialPath
         .split('/')
         .some((s: string) => {
             return ['Identity', 'Link'].includes(s)
         });
-    const url = isContext ? `/v1/Context/${partialPath}/` : `/v1/Vocabulary/${partialPath}`
+    const parentBody = has(classElement, parentKey) ? get(classElement, parentKey).pop() : null;
+    const parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
+
+    const labelEn = extractTextData(classElement, labelKey, 'en-us');
+    const labelFi = extractTextData(classElement, labelKey, 'fi-fi');
+    const commentEn = extractTextData(classElement, commentKey, 'en-us');
+    const commentFi = extractTextData(classElement, commentKey, 'fi-fi');
+    
+    const url = isContext ? `/v1/Context/${partialPath}/` : `/v1/Vocabulary/${partialPath}`;
 
     return {
-        url,
         id,
-        type,
-        label,
-        comment,
-        subClass
+        subClass: parentText,
+        labelEn,
+        labelFi,
+        commentEn,
+        commentFi,
+        url
     }
 }
 
@@ -128,7 +116,7 @@ function extractData(schemaKey: string, vocabKey: string, item: any, pointer: Po
             }) : null
 }
 
-export function modifyProps(item: DefaultPropertyType, pointer: PointersType): PropertyItemType {
+export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
     const splitter: string = 'v1/Vocabulary/';
     const commentVocabKey: string = 'https://standards.oftrust.net/v1/Vocabulary/comment';
     const labelVocabKey: string = 'https://standards.oftrust.net/v1/Vocabulary/label';
@@ -146,13 +134,16 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType): P
         .split('/')
         .filter((s: string) => !!s)
         .pop() : null;
-    const domain: string[] | null = has(item, domainKey) ? get(item, domainKey)!
-        .map((element: {'@id': string}) => {
-            return get(element, '@id')
-                .split('/')
-                .filter((s: string) => !!s)
-                .pop() || '';
-        }) : null;
+    const domain = has(item, domainKey) ? get(item, domainKey)?.map(domain => {
+        const domainId = get(domain, '@id');
+        const isContext = domainId.includes('Identity') || domainId.includes('Link');
+        const partialPath = domainId.split('v1/Vocabulary/').pop() || '';
+
+        return {
+            label: domainId.split('/').pop() || '',
+            url:  isContext ? `/v1/Context/${partialPath}/` : `/v1/Vocabulary/${partialPath}`
+        }
+    }) : [];
     const range: string = item[rangeKey] ? get(item[rangeKey], '[0].@id')
         .split('http://www.w3.org/2001/XMLSchema#')
         .filter((s: string) => !!s)
@@ -191,7 +182,7 @@ export function getRootNodes(data: { [key: string]: NodeType }) {
     return values(data).filter(node => node.root === true);
 }
 
-export function buildTree(list: ClassItemType[]) {
+export function buildTree(list: Array<{[key: string]: string}>) {
     return list.reduce((acc: any, current) => {
         const currentId: string = current.id;
         if (current.subClass) {
@@ -320,7 +311,6 @@ export function extractTextForDetails(path: string, item: any, lang: string, typ
 export function extractTextForGrid(item: any, lang: string, type: 'label' | 'comment') {
     const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
     const emptyTextFi = type === 'label' ? 'Ei etikettiä' : 'Ei kuvausta';
-    const emptyTextEn = type === 'label' ? 'Has no label' : 'Has no description';
 
     if (get(item, type)) {
         return get(item, type)
@@ -360,7 +350,7 @@ export function pathNameToTabValue(path: string): string {
             return 'classdefinitions';
         case 'dataexample':
             return 'dataexample';
-        case 'jsonschema':
+        case 'schema':
             return 'jsonschema';
         default :
             return 'generalinformation'
@@ -378,7 +368,7 @@ export function tabValueToPathName(tabValue: string): string {
         case 'classdefinitions':
             return 'ClassDefinitions';
         case 'jsonschema':
-            return 'Context';
+            return 'Schema';
         case 'dataexample':
             return 'Context'
         default :
@@ -399,3 +389,17 @@ export function getLanguageFromStorage(): 'en' | 'fi' {
 
     return JSON.parse(value);
 };
+
+export function getMainDataByContent<T extends object>(content: T): {content: T, size: string, sloc: number} {
+    const sloc = JSON
+        .stringify(content, undefined, 2)
+        .split('\n')
+        .length;
+    const size = (sizeof(content) / 1000).toFixed(2);
+
+    return {
+        content,
+        size,
+        sloc
+    }
+}

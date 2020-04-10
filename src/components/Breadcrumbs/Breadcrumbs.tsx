@@ -54,7 +54,8 @@ const Breadcrumbs: React.FC = () => {
                 '', 
                 'classes-hierarchy', 
                 'classes-grid', 
-                'properties-grid'
+                'properties-grid',
+                'schema'
             ].includes(path.toLowerCase());
         });
     const gluedPath = `/v1/Context/${location.pathname.split('/').slice(3).join('/')}`
@@ -76,7 +77,8 @@ const Breadcrumbs: React.FC = () => {
                     .reduce((acc, current, idx) => {
                         return idx > pathIndex ? acc : acc + '/' + current;
                     }, '');
-                let to = ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/${path}` : fullPath + '/';
+                let to = path === 'classes-hierarchy' ? `/v1/` : 
+                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/${path}` : fullPath + '/';
                 const label: string = t(path.split('-').join(' '));
 
                 return last ? (

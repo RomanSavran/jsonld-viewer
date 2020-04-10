@@ -42,7 +42,7 @@ const tabsConfig: Array<{value: string, label: string}> = [
 ] 
 
 type ClassesHigherarchyType = {
-	classesData: ClassItemType[],
+	classesList: any[],
 	propData: any
 }
 
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) =>
 	})
 );
 
-const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesData, propData }) => {
+const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propData }) => {
 	const classes = useStyles();
 	const theme: Theme = useTheme();
 	const {t, i18n} = useTranslation();
@@ -117,7 +117,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesData, propDat
 	const path: string = location.pathname
 		.split('/')
 		.filter(s => (
-			!['', 'v1', 'context', 'classdefinitions', 'vocabulary'].includes(s.toLowerCase())
+			!['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
 		))
 		.join('/');
 	const currentTab: string = location.pathname.split('/v1/').pop()?.split('/')[0] || '';
@@ -133,34 +133,47 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesData, propDat
 	const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab));
 	const [filter, handleFilterChange] = useState('');
 	
-	const element: ClassItemType | undefined = classesData.find(item => item.id === id);
+	const element: ClassItemType | undefined = classesList.find(item => item.id === id);
 	const isOnlyVocabulary: boolean = path
 		.split('/')
 		.some((s: string) => {
 			return ['UnitOfMeasure', 'Technical', 'PhysicalProperty'].includes(s);
-		}) || ['Identity', 'Link'].includes(id)
+		}) || ['Identity', 'Link'].includes(id);
+	const isOnlyContext: boolean = ['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id);
 	const language: string = i18n.language;
 	const shouldTreeView: boolean = currentPath === 'classes-hierarchy';
-	const filteredTabsConfig: Array<{value: string, label: string}> = isOnlyVocabulary ? [
+
+	const filteredTabsConfig: Array<{value: string, label: string}> = isOnlyVocabulary && !isOnlyContext ? [
 		{value: 'generalinformation', label: 'General Information'},
 		{value: 'vocabulary', label: 'Vocabulary'}
+	] : isOnlyContext && !isOnlyVocabulary ? [
+		{value: 'generalinformation', label: 'General Information'},
+		{value: 'context', label: 'Context'},
+		{value: 'jsonschema', label: "JSON Schema"},
+		{value: 'dataexample', label: 'Data Example'}
 	] : tabsConfig;
 
 	const properties = useMemo(() => {
 		return path.split('/')
-		.filter((s: string) => !!s)
-		.map((s: string) => {
-			return propData.filter((element: any) => element.domain ? element.domain.includes(s) : false)
-		})
-		.flat()
-		.map((item: any) => {
-			return {
-				...item, 
-				label: extractTextForDetails(path, item, language, 'label'),
-				comment: extractTextForDetails(path, item, language, 'comment')
-			}
-		})
-	}, [language, path, propData])
+			.filter((s: string) => !!s)
+			.map((s: string) => {
+				return propData.filter((element: any) => {
+					return element.domain.length ? element.domain.some((domain: {url: string, label: string}) => {
+						return domain.label === s;
+					}) : false
+				})
+			})
+			.flat()
+			.map((item: any) => {
+				return {
+					...item, 
+					label: extractTextForDetails(path, item, language, 'label'),
+					comment: extractTextForDetails(path, item, language, 'comment')
+				}
+			})
+	}, [language, path, propData]);
+
+	console.log(propData);
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
@@ -192,19 +205,19 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesData, propDat
 
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		const newPath = `/v1/${tabValueToPathName(newValue)}/${path}`.concat(
-			['context', 'generalinformation', 'dataexample', 'jsonschema'].includes(newValue) ? '/' : ''
+			['context', 'generalinformation', 'dataexample'].includes(newValue) ? '/' : ''
 		);
 		setTabValue(newValue);
 		history.push(newPath);
 	};
 
-	const classesTree = useMemo(() => buildTree(classesData), [classesData]);
+	const classesTree = useMemo(() => buildTree(classesList), [classesList]);
 	const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
 
 	const label: string = element && element.label ? element.label : t('Has no label');
 	const comment: string = element && element.comment ? element.comment : t('Has no description');
 	const data = element ? {id, label, comment, superclasses} : null;
-	
+
 	return (
 		<Grid
 			container

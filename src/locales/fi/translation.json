@@ -1,7 +1,11 @@
 {
     "Label": "Etiketti",
+    "Label (en)": "Etiketti (en)",
+    "Label (fi)": "Etiketti (fi)",
     "label": "etiketti",
     "Description": "Kuvaus",
+    "Description (en)": "Kuvaus (en)",
+    "Description (fi)": "Kuvaus (fi)",
     "Context URI": "URI-konteksti",
     "Vocabulary URI": "Sanasto-URI",
     "Usage": "Käyttö",
@@ -10,6 +14,9 @@
     "Property": "Omaisuus",
     "Range": "Alue",
     "class": "Luokka",
+    "Class": "Luokka",
+    "Parent Class": "Vanhempi luokka",
+    "Parent classes": "Vanhempien luokat",
     "subClass": "Alempi luokka",
     "comment": "Kommentti",
     "Comment": "Kommentti",
@@ -43,5 +50,6 @@
     "Has no label": "Ei etikettiä",
     "Has no description": "Ei kuvausta",
     "JSON Schema": "JSON-kaavio",
-    "Copy": "Kopio"
+    "Copy": "Kopio",
+    "Property category": "Omaisuusluokka"
 }

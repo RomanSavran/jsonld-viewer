@@ -146,11 +146,18 @@ const Table: React.FC<TableProps> = (props) => {
 
 	const filterFunction = (element: ClassItemType | PropertyItemType): boolean => {
 		return Object.keys(filterObj)
-			.every(key =>
-				_.get(element, key)
-					.toLowerCase()
-					.includes(filterObj[key].toLocaleLowerCase())
-			);
+			.every(key => {
+				if (key === 'domain') {
+					let data = _.get(element, 'domain').map((item: {url: string, label: string}) => item.label).join(', ');
+					return data
+						.toLowerCase()
+						.includes(filterObj[key].toLowerCase())
+				} else {
+					return _.get(element, key)
+						.toLowerCase()
+						.includes(filterObj[key].toLowerCase())
+				}
+			});
 	}
 
 	return (
@@ -225,6 +232,22 @@ const Table: React.FC<TableProps> = (props) => {
 														>
 															{_.get(element, `${header.id}`)}
 														</Link>
+													) : header.id === 'domain' ? (
+														<div>
+															{element.domain.map((domain: {url: string, label: string}, idx: number, arr: any) => {
+																return (
+																	<>
+																		<Link
+																			className={classes.link}
+																			to={domain.url}
+																		>
+																			{domain.label}
+																		</Link>
+																		{arr.length - 1 === idx ? `` : `, ` }
+																	</>
+																)
+															})}
+														</div>
 													) : _.get(element, `${header.id}`)}
 												</MuiTableCell>
 											)

@@ -9,7 +9,7 @@ import { RoutesContext } from '../context/RoutesContext';
 import { useTranslation } from 'react-i18next';
 
 type ClassesHigherarchyType = {
-	classesData: ClassItemType[]
+	classesList: Array<{[key: string]: string}>
 }
 
 const useStyles = makeStyles(theme => ({
@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-const ClassesHigherarchy: React.FC<ClassesHigherarchyType> = ({ classesData }) => {
+const ClassesHigherarchy: React.FC<ClassesHigherarchyType> = ({ classesList }) => {
 	const {handleChangeCurrentPath} = useContext(RoutesContext);
 	const classes = useStyles();
 	const {t} = useTranslation();
@@ -39,7 +39,7 @@ const ClassesHigherarchy: React.FC<ClassesHigherarchyType> = ({ classesData }) =
 		handleFilterChange(value);
 	}
 
-	const classesTree = useMemo(() => buildTree(classesData), [classesData]);
+	const classesTree = useMemo(() => buildTree(classesList), [classesList]);
 	const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
 
 	return (

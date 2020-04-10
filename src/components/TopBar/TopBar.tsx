@@ -105,7 +105,7 @@ type Link = {
 }
 
 const links: Link[] = [
-    { label: 'Classes Hierarchy', to: '/classes-hierarchy' },
+    { label: 'Classes Hierarchy', to: '/v1/' },
     { label: 'Classes Grid', to: '/classes-grid' },
     { label: 'Properties Grid', to: '/properties-grid' }
 ]
