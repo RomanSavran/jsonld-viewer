@@ -23,7 +23,7 @@ const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesList, propData}
         superclasses: location.pathname.split('Vocabulary/').pop()?.split('/').filter(s => !!s && s !== id),
         comment: extractTextForGrid(currentProperty, i18n.language, 'comment') || t('Has no label'),
         label: extractTextForGrid(currentProperty, i18n.language, 'label') || t('Has no description'),
-        domain: currentProperty.domain || []
+        domain: currentProperty.domain
     }
     
     return (

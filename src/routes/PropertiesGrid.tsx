@@ -11,8 +11,8 @@ type PropertiesGridTypes = {
 const headers = [
     {id: 'category', label: 'Property category'},
     {id: 'id', label: 'Property'},
-    {id: 'label', label: 'Label'},
-    {id: 'comment', label: 'Comment'},
+    {id: 'labelEn', label: 'Label'},
+    {id: 'commentEn', label: 'Description'},
     {id: 'domain', label: 'Domain'},
     {id: 'range', label: 'Range'}
 ];
@@ -37,10 +37,24 @@ const PropertiesGrid: React.FC<PropertiesGridTypes> = ({propertiesData}) => {
     const modifiedData = propertiesData.map(item => {
         return {
             ...item,
-            label: extractTextForGrid(item, language, 'label'),
-            comment: extractTextForGrid(item, language, 'comment'),
+            range: item.range || '',
+            labelEn: extractTextForGrid(item, 'en', 'label'),
+            commentEn: extractTextForGrid(item, 'en', 'comment'),
+            labelFi: extractTextForGrid(item, 'fi', 'label'),
+            commentFi: extractTextForGrid(item, 'fi', 'comment'),
         }
     });
+
+    const headersByLanguage = language === 'en' ? headers : [
+        {id: 'category', label: 'Property category'},
+        {id: 'id', label: 'Property'},
+        {id: 'labelEn', label: 'Label (en-us)'},
+        {id: 'labelFi', label: 'Label (fi-fi)'},
+        {id: 'commentEn', label: 'Description (en-us)'},
+        {id: 'commentFi', label: 'Description (fi-fi)'},
+        {id: 'domain', label: 'Domain'},
+        {id: 'range', label: 'Range'}
+    ];
 
     return (
         <Table 
@@ -48,7 +62,7 @@ const PropertiesGrid: React.FC<PropertiesGridTypes> = ({propertiesData}) => {
             handleRequestSort={handleRequestSort}
             orderBy={orderBy}
             data={modifiedData}
-            headers={headers}
+            headers={headersByLanguage}
         />
     )
 }

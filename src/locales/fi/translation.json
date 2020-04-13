@@ -1,11 +1,11 @@
 {
     "Label": "Etiketti",
-    "Label (en)": "Etiketti (en)",
-    "Label (fi)": "Etiketti (fi)",
+    "Label (en-us)": "Etiketti (en-us)",
+    "Label (fi-fi)": "Etiketti (fi-fi)",
     "label": "etiketti",
     "Description": "Kuvaus",
-    "Description (en)": "Kuvaus (en)",
-    "Description (fi)": "Kuvaus (fi)",
+    "Description (en-us)": "Kuvaus (en-us)",
+    "Description (fi-fi)": "Kuvaus (fi-fi)",
     "Context URI": "URI-konteksti",
     "Vocabulary URI": "Sanasto-URI",
     "Usage": "Käyttö",
@@ -51,5 +51,6 @@
     "Has no description": "Ei kuvausta",
     "JSON Schema": "JSON-kaavio",
     "Copy": "Kopio",
-    "Property category": "Omaisuusluokka"
+    "Property category": "Omaisuusluokka",
+    "Domain": "Verkkotunnuksen"
 }

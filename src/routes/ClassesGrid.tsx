@@ -15,15 +15,17 @@ const headers = [
 ]
 
 const ClassesGrid: React.FC<ClassesGridTypes> = ({ classesList }) => {
-    const {handleChangeCurrentPath} = useContext(RoutesContext);
+    const {handleChangeCurrentPath, currentPath} = useContext(RoutesContext);
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
     const [orderBy, setOrderBy] = useState('id');
     const { i18n } = useTranslation();
     const language = i18n.language;
 
     useEffect(() => {
-        handleChangeCurrentPath('classes-grid');
-    }, [handleChangeCurrentPath]);
+        if (currentPath !== 'classes-grid') {
+            handleChangeCurrentPath('classes-grid');
+        }
+    }, [handleChangeCurrentPath, currentPath]);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -34,10 +36,10 @@ const ClassesGrid: React.FC<ClassesGridTypes> = ({ classesList }) => {
     const headersByLang = language === 'en' ? headers : [
         {id: 'id', label: 'Class'},
         {id: 'subClass', label: 'Parent Class'},
-        {id: 'labelEn', label: 'Label (en)'},
-        {id: 'labelFi', label: 'Label (fi)'},
-        {id: 'commentEn', label: 'Description'},
-        {id: 'commentFi', label: 'Description (fi)'}
+        {id: 'labelEn', label: 'Label (en-us)'},
+        {id: 'labelFi', label: 'Label (fi-fi)'},
+        {id: 'commentEn', label: 'Description (en-us)'},
+        {id: 'commentFi', label: 'Description (fi-fi)'}
     ]
 
     return (

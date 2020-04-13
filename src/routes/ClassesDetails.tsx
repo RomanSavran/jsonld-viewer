@@ -167,13 +167,15 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 			.map((item: any) => {
 				return {
 					...item, 
-					label: extractTextForDetails(path, item, language, 'label'),
-					comment: extractTextForDetails(path, item, language, 'comment')
+					label: language === 'fi' ? `${extractTextForDetails(path, item, 'fi', 'label')} (${extractTextForDetails(path, item, 'en', 'label')})` : extractTextForDetails(path, item, 'en', 'label'),
+					labelEn: extractTextForDetails(path, item, 'en', 'label'),
+					labelFi: extractTextForDetails(path, item, 'fi', 'label'),
+					commentEn: extractTextForDetails(path, item, 'en', 'comment'),
+					commentFi: extractTextForDetails(path, item, 'fi', 'comment'),
+					comment: language === 'fi' ? `${extractTextForDetails(path, item, 'fi', 'comment')} (${extractTextForDetails(path, item, 'en', 'comment')})` : extractTextForDetails(path, item, 'en', 'comment'),
 				}
 			})
 	}, [language, path, propData]);
-
-	console.log(propData);
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
@@ -282,6 +284,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 										properties={properties} 
 										id={id} 
 										type="class"
+										shouldTreeView={shouldTreeView}
 									/>}
 									{tabValue === 'context' && <Context path={path}/>}
 									{tabValue === 'vocabulary' && <Vocabulary path={location.pathname}/>}

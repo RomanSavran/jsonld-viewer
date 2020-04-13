@@ -196,7 +196,7 @@ const Info: React.FC<InfoProps> = (props) => {
                     <p className={classes.text}>{comment}</p>
                 </div>
                 <div className={classes.descriptionItem}>
-                    <h4 className={classes.itemTitle}>{t("Parent classes")} ({superclasses.length})</h4>
+                    <h4 className={classes.itemTitle}>{type === 'prop' ? t("Property category") : t("Parent classes")} ({superclasses.length})</h4>
                     <ul className={classes.ul}>
                         {
                             superclasses

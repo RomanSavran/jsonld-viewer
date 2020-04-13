@@ -133,7 +133,7 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
     const category = item[categoryKey] ? get(item[categoryKey], '[0].@id')
         .split('/')
         .filter((s: string) => !!s)
-        .pop() : null;
+        .pop() : '';
     const domain = has(item, domainKey) ? get(item, domainKey)?.map(domain => {
         const domainId = get(domain, '@id');
         const isContext = domainId.includes('Identity') || domainId.includes('Link');
@@ -148,13 +148,12 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
         .split('http://www.w3.org/2001/XMLSchema#')
         .filter((s: string) => !!s)
         .pop() : null;
-
     return {
         id,
         url: `/v1/Vocabulary/${url}`,
         label,
         comment,
-        category,
+        category: category === 'owl#topDataProperty' ? '' : category,
         domain,
         range
     }
@@ -269,75 +268,51 @@ function isPathInDomain(domains: string[], path: string): boolean {
 }
 
 export function extractTextForDetails(path: string, item: any, lang: string, type: 'label' | 'comment') {
-    let value = [];
     const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
+    const emptyLabelText = lang === 'en' ? 'Has no label' : 'Ei etikettiä';
+    const emptyCommentText = lang === 'en' ? 'Has no description' : 'Ei kuvausta';
 
     if (item[type]) {
-        value = item[type].map((element: any) => {
+        let res = item[type].map((element: any) => {
             if (!get(element, 'domain')) {
-                if (language !== 'en-us') {
-                    const emptyText = type === 'label' ? 'Ei etikettiä' : 'Ei kuvausta';
-                    const fi = element[type].find((k: TextType) => get(k, '@language') === 'fi-fi');
-                    const en = element[type].find((k: TextType) => get(k, '@language') === 'en-us');
-
-                    return en && fi ? `${get(fi, '@value')} (${get(en, '@value')})` :
-                        en && !fi ? `${emptyText} (${get(en, '@value')})` : '';
-                }
-
-                const currentLanguageValue = element[type].find((k: any) => get(k, '@language') === language);
-
-                return currentLanguageValue ? get(currentLanguageValue, '@value') : ''
+                const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
+                
+                return textByLang ? get(textByLang, '@value') : '';
             } else if (get(element, 'domain') && isPathInDomain(get(element, 'domain'), path)) {
-                if (language !== 'en-us') {
-                    const emptyText = type === 'label' ? 'Ei etikettiä' : 'Ei kuvausta';
-                    const fi = element[type].find((k: TextType) => get(k, '@language') === 'fi-fi');
-                    const en = element[type].find((k: TextType) => get(k, '@language') === 'en-us');
-
-                    return en && fi ? `${get(fi, '@value')} (${get(en, '@value')})` :
-                        en && !fi ? `${emptyText} (${get(en, '@value')})` : emptyText;
-                }
-                const currentLanguageValue = element[type].find((k: any) => get(k, '@language') === language);
-
-                return currentLanguageValue ? get(currentLanguageValue, '@value') : ''
+                const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
+                
+                return textByLang ? get(textByLang, '@value') : '';
             }
 
-            return '';
+            return ''
         })
+        .filter((s: string) => !!s)
+        .join('');
+
+        return !res && type === 'label' ? emptyLabelText :
+                !res && type === 'comment' ? emptyCommentText : res;
     }
 
-    return Array.from(new Set(value.flat().filter((s: string) => !!s))).join(', ');
+    return type === 'label' ? emptyLabelText : emptyCommentText;
 }
 
-export function extractTextForGrid(item: any, lang: string, type: 'label' | 'comment') {
-    const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
-    const emptyTextFi = type === 'label' ? 'Ei etikettiä' : 'Ei kuvausta';
-
+export function extractTextForGrid<T extends object>(item: T, language: string, type: 'label' | 'comment') {
     if (get(item, type)) {
-        return get(item, type)
-            .map((item: any) => {
-                if (get(item, type)) {
-                    if (language !== 'en-us') {
-                        const fi = item[type].find((k: TextType) => get(k, '@language') === 'fi-fi');
-                        const en = item[type].find((k: TextType) => get(k, '@language') === 'en-us');
-    
-                        return en && fi ? `${get(fi, '@value')} (${get(en, '@value')})` :
-                            en && !fi ? `${emptyTextFi} (${get(en, '@value')})` : emptyTextFi;
-                    }
+        const enList = get(item, type).map((itemType: any) => {
+            const en = itemType[type]?.find((k: TextType) => get(k, '@language') === 'en-us');
 
-                    const filteredLabel = get(item, type).find((element: any) => {
-                        return get(element, '@language') === language;
-                    });
+            return en ? get(en, '@value') : '';
+        }).filter((s: string) => !!s);
+        const fiList = get(item, type).map((itemType: any) => {
+            const en = itemType[type]?.find((k: TextType) => get(k, '@language') === 'fi-fi');
 
-                    return filteredLabel ? get(filteredLabel, '@value').slice(0, 1).toUpperCase() + get(filteredLabel, '@value').slice(1) : '';
-                }
-                
-                return '';
-            })
-            .filter((s: string) => !!s)
-            .join(', ');
+            return en ? get(en, '@value') : '';
+        }).filter((s: string) => !!s);
+
+        return language === 'en' ? Array.from(new Set(enList)).join(', ') : Array.from(new Set(fiList)).join(', ');
     }
 
-    return '';
+    return ''
 }
 
 export function pathNameToTabValue(path: string): string {

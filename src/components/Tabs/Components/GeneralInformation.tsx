@@ -51,10 +51,11 @@ type GeneralInformationTypes = {
 	properties?: any,
 	type: 'class' | 'prop',
 	classesData?: ClassItemType[],
-	data?: any
+	data?: any,
+	shouldTreeView: boolean
 }
 
-const headers: Array<{id: string, label: string}> = [
+const initHeaders: Array<{id: string, label: string}> = [
 	{id: 'category', label: 'Property category'},
 	{id: 'id', label: 'Property'},
 	{id: 'label', label: 'Label'},
@@ -64,16 +65,19 @@ const headers: Array<{id: string, label: string}> = [
 
 const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 	const classes = useStyles();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 	const [orderBy, setOrderBy] = useState('id');
 	const {
 		id,
 		properties,
 		data,
-		type
+		type,
+		shouldTreeView
 	} = props;
 	const location = useLocation();
+	
+	console.log(data);
 
 	if (!data) return <Error404 />
 	
@@ -99,6 +103,22 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
         setOrder(isAsc ? 'desc' : 'asc')
         setOrderBy(property);
 	}
+
+	const headers = !shouldTreeView && i18n.language === 'en' ? [
+		{id: 'category', label: 'Property category'},
+		{id: 'id', label: 'Property'},
+		{id: 'labelEn', label: 'Label'},
+		{id: 'commentEn', label: 'Description'},
+		{id: 'range', label: 'Range'}
+	] : !shouldTreeView && i18n.language === 'fi' ? [
+		{id: 'category', label: 'Property category'},
+		{id: 'id', label: 'Property'},
+		{id: 'labelEn', label: 'Label (en-us)'},
+		{id: 'labelFi', label: 'Label (fi-fi)'},
+		{id: 'commentEn', label: 'Description (en-us)'},
+		{id: 'commentFi', label: 'Description (en-us)'},
+		{id: 'range', label: 'Range'}
+	] : initHeaders;
 	
 	return (
 		<div>

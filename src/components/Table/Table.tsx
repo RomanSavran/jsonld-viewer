@@ -236,7 +236,7 @@ const Table: React.FC<TableProps> = (props) => {
 														<div>
 															{element.domain.map((domain: {url: string, label: string}, idx: number, arr: any) => {
 																return (
-																	<>
+																	<React.Fragment key={domain.url}>
 																		<Link
 																			className={classes.link}
 																			to={domain.url}
@@ -244,7 +244,7 @@ const Table: React.FC<TableProps> = (props) => {
 																			{domain.label}
 																		</Link>
 																		{arr.length - 1 === idx ? `` : `, ` }
-																	</>
+																	</React.Fragment>
 																)
 															})}
 														</div>
