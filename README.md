@@ -12,7 +12,7 @@ Download files into your local machine and open terminal in root folder. Then fo
 
 ### 3) `yarn install`
 
-Install necessary npm dependencies in the project
+Insert this command into your terminal. It'll install necessary npm dependencies in the project
 
 ### 4) `yarn start`
 
