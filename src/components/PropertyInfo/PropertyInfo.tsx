@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Info from '../Info';
-import {ClassItemType} from '../../utils/helpers';
 import Table from '../Table';
+import { useTranslation } from 'react-i18next';
 
 type PropertyInfoProp = {
     data: any,
@@ -12,7 +12,7 @@ type PropertyInfoProp = {
 const headers: Array<{id: string, label: string}> = [
     {id: 'id', label: 'class'},
     {id: 'subClass', label: 'Parent classes'},
-    {id: 'comment', label: 'Description'}
+    {id: 'commentEn', label: 'Description'}
 ]
 
 const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
@@ -23,6 +23,7 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
     } = props;
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
     const [orderBy, setOrderBy] = useState('id');
+    const {i18n} = useTranslation();
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -43,6 +44,13 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
         })
     });
 
+    const headersByLanguage = i18n.language === 'en' ? headers : [
+        {id: 'id', label: 'class'},
+        {id: 'subClass', label: 'Parent classes'},
+        {id: 'commentEn', label: 'Description (en-us)'},
+        {id: 'commentFi', label: 'Description (fi-fi)'}
+    ]
+
     return (
         <div>
             <Info 
@@ -58,7 +66,7 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
                 order={order}
                 orderBy={orderBy}
                 data={currentClasses}
-                headers={headers}
+                headers={headersByLanguage}
                 handleRequestSort={handleRequestSort}
             />
         </div>

@@ -25,7 +25,6 @@ import {
 	modifyProps,
 	IdElementType,
 	PointersType,
-	PropertyItemType,
 	modifyClassElement
 } from './utils/helpers';
 import TopBar from './components/TopBar';

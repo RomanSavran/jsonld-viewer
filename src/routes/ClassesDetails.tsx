@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core';
 import Tree from '../components/Tree';
 import { 
-	ClassItemType, 
 	buildTree, 
 	getRootNodes, 
 	pathNameToTabValue, 
@@ -133,7 +132,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 	const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab));
 	const [filter, handleFilterChange] = useState('');
 	
-	const element: ClassItemType | undefined = classesList.find(item => item.id === id);
+	const element: any = classesList.find(item => item.id === id);
 	const isOnlyVocabulary: boolean = path
 		.split('/')
 		.some((s: string) => {
@@ -215,10 +214,17 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 
 	const classesTree = useMemo(() => buildTree(classesList), [classesList]);
 	const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
+	const labelEn = element.labelEn || 'Has no label';
+	const labelFi = element.labelFi || 'Ei etikettiä';
+	const commentEn = element.commentEn || 'Has no description';
+	const commentFi = element.commentFi || 'Ei kuvausta';
 
-	const label: string = element && element.label ? element.label : t('Has no label');
-	const comment: string = element && element.comment ? element.comment : t('Has no description');
-	const data = element ? {id, label, comment, superclasses} : null;
+	const data = element ? {
+		id, 
+		label: language === 'en' ? labelEn : `${labelFi} (${labelEn})`,
+		comment: language === 'en' ? commentEn : `${commentFi} (${commentEn})`,
+		superclasses
+	} : null;
 
 	return (
 		<Grid

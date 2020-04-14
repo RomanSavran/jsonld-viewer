@@ -77,8 +77,6 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 	} = props;
 	const location = useLocation();
 	
-	console.log(data);
-
 	if (!data) return <Error404 />
 	
 	const {label, comment, superclasses} = data;

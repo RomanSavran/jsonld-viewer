@@ -3,7 +3,7 @@ import {
 	TextField,
 	makeStyles
 } from '@material-ui/core';
-import { ClassItemType, buildTree, getRootNodes } from '../utils/helpers';
+import { buildTree, getRootNodes } from '../utils/helpers';
 import Tree from '../components/Tree';
 import { RoutesContext } from '../context/RoutesContext';
 import { useTranslation } from 'react-i18next';

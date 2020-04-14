@@ -70,7 +70,7 @@ const ClassDefinition: React.FC<ClassDefinitionProps> = (props) => {
         return () => {
             mounted = true;
         }
-    }, [path]);
+    }, [path, id]);
 
     useEffect(() => {
         fetch(mdFileCD)
