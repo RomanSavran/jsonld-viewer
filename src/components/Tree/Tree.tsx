@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useContext, MouseEvent } from 'react';
 import {
 	makeStyles,
 	createStyles,
@@ -9,9 +9,10 @@ import {
 	MinusSquare,
 	Folder
 } from '../Icons';
+import { RoutesContext } from '../../context/RoutesContext';
 import TreeNode from './TreeNode';
 import { NavLink } from 'react-router-dom';
-import { parentsToState, NodeType } from '../../utils/helpers';
+import { NodeType } from '../../utils/helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -79,27 +80,22 @@ type TreeTypes = {
 	filter: string
 }
 
-const Tree: React.FC<TreeTypes> = (props) => {
+const Tree: React.FC<TreeTypes> = ({
+	rootNodes,
+	tree,
+	filter
+}) => {
 	const classes = useStyles();
-	const {
-		rootNodes,
-		tree,
-		filter,
-	} = props;
-	const [parentsStatus, setParentsStatus] = useState(
-		parentsToState(rootNodes, true)
-	);
+	const { treeState, handleChangeTreeState } = useContext(RoutesContext);
 
-	const handleChangeParentStatus = (id: string) => (event: MouseEvent<HTMLSpanElement>) => {
-		setParentsStatus((prevState: any) => ({
-			...prevState,
-			[id]: !prevState[id]
-		}))
+	const handleChangeParentStatus = (nodePath: string, status: boolean) => (event: MouseEvent<HTMLSpanElement>) => {
+		handleChangeTreeState(nodePath, status)
 	};
 
 	return (
 		<ul className={classes.ulRoot}>
 			{rootNodes.map((node: NodeType) => {
+				const isExpand = node.path in treeState ? treeState[node.path] : false;
 				const id: string = node.path
 					.split('/')
 					.filter((s: string) => !!s)
@@ -108,13 +104,9 @@ const Tree: React.FC<TreeTypes> = (props) => {
 					<li className={classes.li} key={node.path}>
 						<span
 							className={classes.square}
-							onClick={handleChangeParentStatus(node.path)}
+							onClick={handleChangeParentStatus(node.path, !isExpand)}
 						>
-							{parentsStatus ? (
-								parentsStatus[node.path] ? (
-									<MinusSquare {...squareProps} />
-								) : <PlusSquare {...squareProps} />
-							) : null}
+							{isExpand ? <MinusSquare {...squareProps} /> : <PlusSquare {...squareProps} />}
 						</span>
 						<span>
 							<Folder
@@ -126,14 +118,12 @@ const Tree: React.FC<TreeTypes> = (props) => {
 						</span>
 						<NavLink className={classes.link} to={node.path} exact>{id}</NavLink>
 						{
-							parentsStatus ? (
-								parentsStatus[node.path] && (
-									<TreeNode
-										filter={filter}
-										node={node}
-										tree={tree}
-									/>
-								)
+							isExpand ? (
+								<TreeNode
+									filter={filter}
+									node={node}
+									tree={tree}
+								/>
 							) : null
 						}
 					</li>

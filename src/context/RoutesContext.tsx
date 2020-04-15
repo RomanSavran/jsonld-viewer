@@ -13,13 +13,24 @@ const RoutesContextProvider: React.FC<RoutesContextProps> = ({
         'classes-hierarchy'
     );
 
+    const [treeState, setTreeState] = useState({});
+
     const handleChangeCurrentPath = (path: 'classes-hierarchy' | 'classes-grid' | 'properties-grid') => {
         setCurrentPath(path)
+    }
+
+    const handleChangeTreeState = (node: any, status: boolean) => {
+        setTreeState(prevState => ({
+            ...prevState,
+            [node]: status
+        }))
     }
 
     return (
         <RoutesContext.Provider
             value={{
+                treeState,
+                handleChangeTreeState,
                 currentPath,
                 handleChangeCurrentPath
             }}
