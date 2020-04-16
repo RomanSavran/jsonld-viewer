@@ -45,9 +45,6 @@ const useStyles = makeStyles((theme: Theme) =>
 					display: 'none'
 				}
 			},
-			'& > .active': {
-				color: 'rgb(0, 149, 255)'
-			},
 		},
 		square: {
 			cursor: 'pointer'
@@ -63,6 +60,12 @@ const useStyles = makeStyles((theme: Theme) =>
 				color: 'rgb(0, 86, 179)',
 				textDecoration: 'underline',
 			}
+		},
+		strokeWrapper: {
+			cursor: 'pointer',
+			'& > .active': {
+				color: 'rgb(0, 149, 255)'
+			},
 		}
 	})
 )
@@ -95,30 +98,31 @@ const Tree: React.FC<TreeTypes> = ({
 	return (
 		<ul className={classes.ulRoot}>
 			{rootNodes.map((node: NodeType) => {
-				const isExpand = node.path in treeState ? treeState[node.path] : false;
 				const id: string = node.path
 					.split('/')
 					.filter((s: string) => !!s)
 					.pop() || '';
+				const isExpand = id in treeState ? treeState[id] : false;
 				return (
 					<li className={classes.li} key={node.path}>
-						<span
-							className={classes.square}
-							onClick={handleChangeParentStatus(node.path, !isExpand)}
-						>
-							{isExpand ? <MinusSquare {...squareProps} /> : <PlusSquare {...squareProps} />}
-						</span>
-						<span>
-							<Folder
-								width={27}
-								height={12}
-								viewBox="0 0 27 12"
-								htmlColor="rgb(164, 165, 167)"
-							/>
-						</span>
-						<NavLink className={classes.link} to={node.path} exact>{id}</NavLink>
+						<div className={classes.strokeWrapper} onClick={handleChangeParentStatus(node.path, !isExpand)}>
+							<span
+								className={classes.square}
+							>
+								{isExpand ? <MinusSquare {...squareProps} /> : <PlusSquare {...squareProps} />}
+							</span>
+							<span>
+								<Folder
+									width={27}
+									height={12}
+									viewBox="0 0 27 12"
+									htmlColor="rgb(164, 165, 167)"
+								/>
+							</span>
+							<NavLink className={classes.link} to={node.path} exact>{id}</NavLink>
+						</div>
 						{
-							isExpand ? (
+							isExpand || !!filter ? (
 								<TreeNode
 									filter={filter}
 									node={node}

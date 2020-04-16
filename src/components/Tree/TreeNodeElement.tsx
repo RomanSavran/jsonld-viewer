@@ -39,11 +39,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   strokeWrapper: {
     position: 'relative',
-    display: 'flex',
+    display: 'inline-flex',
     flexDirection: 'row-reverse',
     justifyContent: 'flex-end',
     alignItems: 'center',
     padding: '3px 0',
+    cursor: 'pointer',
     '& > .active': {
       color: 'rgb(0, 149, 255)'
     },
@@ -66,7 +67,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   squareWrapper: {
     position: 'absolute',
     left: -5,
-    cursor: 'pointer'
   }
 }))
 
@@ -95,12 +95,12 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
     handleChangeTreeState(nodePath, status)
   }
 
-  const text: string = node.path
+  const id: string = node.path
     .split('/')
     .filter((s: string) => !!s)
     .pop() || '';
 
-  const isExpand = node.path in treeState ? treeState[node.path] : false;
+  const isExpand = id in treeState ? treeState[id] : false;
 
   return (
     <li
@@ -108,14 +108,14 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
         [classes.filteredLi]: !!filter
       })}
     >
-      {text.toLowerCase().includes(filter) ? (
-        <div className={classes.strokeWrapper}>
+      {id.toLowerCase().includes(filter) ? (
+        <div className={classes.strokeWrapper} onClick={changeExpandStatus(node.path, !isExpand)}>
           <NavLink
             to={node.path}
             exact
             className={classes.link}
           >
-            {text}
+            {id}
           </NavLink>
           <Expand
 
@@ -125,8 +125,8 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
             htmlColor="rgb(164, 165, 167)"
           />
           {
-            node.children.length ? (
-              <span onClick={changeExpandStatus(node.path, !isExpand)} className={classes.squareWrapper}>{
+            node.children.length && !filter ? (
+              <span  className={classes.squareWrapper}>{
                 isExpand ? <MinusSquare {...squareProps} /> : <PlusSquare {...squareProps} />
               }</span>
             ) : null
@@ -134,7 +134,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
         </div>
       ) : null}
       {
-        isExpand ? (
+        isExpand || !!filter ? (
           <TreeNode
             node={node}
             filter={filter}
