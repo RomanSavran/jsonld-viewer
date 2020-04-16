@@ -90,10 +90,17 @@ const Context: React.FC<ContextProps> = (props) => {
         return () => {
             mounted = true;
         }
-    }, [query, id]);
+
+        /* eslint-disable-next-line */
+    }, []);
 
     useEffect(() => {
-        fetch(mdFileCV)
+        fetch(mdFileCV, {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'public, max-age=31536000'
+            }
+        })
             .then(response => {
                 return response.text();
             })

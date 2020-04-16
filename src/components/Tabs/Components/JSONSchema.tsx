@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SystemAPI from '../../../services/api';
 import Spinner from '../../Spinner';
 import { Error404 } from '../../Errors';
-import { get, has, omit } from 'lodash';
 import ContentViewer from '../../ContentViewer';
 import { useLocation } from 'react-router-dom';
-import jsonSchemaGenerator from 'json-schema-generator';
 import CopyTooltip from '../../CopyTooltip';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import {
@@ -17,16 +15,6 @@ import {
 import DataContext from '../../../assets/custom-classes/DataContext/JSONSchema.json';
 import SensorDataProductContext from '../../../assets/custom-classes/DataContext/SensorDataProductContext/JSONSchema.json';
 import LtifDataProductContext from '../../../assets/custom-classes/DataContext/LtifDataProductContext/JSONSchema.json';
-
-type ResultData = {
-    "@context": string
-    [key: string]: { [key: string]: string } | string
-}
-
-type ContextData = {
-    '@id': string,
-    '@nest': string
-}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -92,7 +80,7 @@ const JSONSchema: React.FC = () => {
         let mounted = false;
 
         if (!['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id)) {
-            SystemAPI.getData(`/v1/Context${mainPath}/`)
+            SystemAPI.getData(`/v1/Schema${mainPath}`)
                 .then(data => {
                     if (!mounted) {
                         if (typeof data === 'number') {
@@ -111,8 +99,8 @@ const JSONSchema: React.FC = () => {
                 })
         } else {
             const data = id === 'DataProductContext' ? DataContext :
-                        id === 'SensorDataProductContext' ? SensorDataProductContext :
-                        id === 'LtifDataProductContext' ? LtifDataProductContext : {};
+                id === 'SensorDataProductContext' ? SensorDataProductContext :
+                    id === 'LtifDataProductContext' ? LtifDataProductContext : {};
             setValue({
                 data: data,
                 loading: false,
@@ -124,42 +112,11 @@ const JSONSchema: React.FC = () => {
             mounted = true;
         }
         /* eslint-disable-next-line */
-    }, [path, id]);
+    }, []);
 
     if (value.error) return <Error404 />
     if (value.loading && !value.error) return <Spinner />
 
-    const context: any = omit(get(value.data, '@context'), ['@version', '@vocab', '@classDefinition', 'pot']);
-
-    const properties: { [key: string]: ContextData } = Object.keys(context)
-        .filter(key => !!has(context[key], '@nest'))
-        .reduce((acc, current) => ({ ...acc, [current]: context[current] }), {});
-
-    const parents: { [key: string]: string } = Object.keys(context)
-        .filter(key => !has(context[key], '@nest'))
-        .sort()
-        .reduce((acc, current) => ({ ...acc, [current]: "" }), {});
-
-    const initObj: { [key: string]: string } = !['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id) ? {
-        "@context": `https://standards-ontotest.oftrust.net${path}`,
-        "id": "",
-        "data": "",
-        "metadata": "",
-        ...parents
-    } : {};
-
-    const data: ResultData = Object.keys(properties).reduce(
-        (acc: any, current) => {
-            const nest: string = get(properties[current], '@nest') || '';
-
-            acc[nest] = typeof acc[nest] === 'string' ? { [current]: "" } : Object.assign({}, acc[nest], { [current]: "" })
-
-            return acc;
-        },
-        initObj
-    );
-
-    const jsonSchemaData = ['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id) ? value.data : jsonSchemaGenerator(data);
     const uri = `https://standards-ontotest.oftrust.net/v1/Schema${mainPath}`;
 
     return (
@@ -194,7 +151,7 @@ const JSONSchema: React.FC = () => {
                 </a>
             </div>
             <ContentViewer
-                content={jsonSchemaData}
+                content={value.data}
                 playground={false}
                 fileName={`JSONSchema-${id}`}
             />

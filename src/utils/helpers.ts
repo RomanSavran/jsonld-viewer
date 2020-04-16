@@ -226,17 +226,6 @@ export function buildTree(list: Array<{[key: string]: string}>) {
     }, {});
 }
 
-export function parentsToState(data: NodeType[], initStatus: boolean): { [key: string]: boolean } | null {
-    if (!data.length) return null;
-
-    return data.reduce((acc, item) => {
-        return {
-            ...acc,
-            [item.path]: initStatus
-        }
-    }, {});
-}
-
 export function getChildNodes(roots: any, node: NodeType) {
     return node.children.length ? node.children.map((path: string) => roots[path]) : [];
 }

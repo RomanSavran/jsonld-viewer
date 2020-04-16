@@ -70,7 +70,9 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
         return () => {
             mounted = true;
         }
-    }, [path, id]);
+
+        /* eslint-disable-next-line */
+    }, []);
 
     useEffect(() => {
         fetch(mdFileCV)

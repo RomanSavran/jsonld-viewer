@@ -70,7 +70,9 @@ const ClassDefinition: React.FC<ClassDefinitionProps> = (props) => {
         return () => {
             mounted = true;
         }
-    }, [path, id]);
+
+        /* eslint-disable-next-line */
+    }, []);
 
     useEffect(() => {
         fetch(mdFileCD)

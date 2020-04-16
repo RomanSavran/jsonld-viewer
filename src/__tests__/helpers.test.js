@@ -1,26 +1,4 @@
-import { parentsToState, buildTree } from '../utils/helpers';
-
-describe('test parentsToState function', () => {
-    test('test with empty array', () => {
-        const mock = [];
-        expect(parentsToState(mock, false)).toBe(null);
-    });
-
-    test('test with mock data', () => {
-        const mock = [
-            {path: 'test1', children: ['test0-0']},
-            {path: 'test2', children: []},
-            {path: 'test0-0', children: []}
-        ];
-        const initStatus = true;
-
-        expect(parentsToState(mock, initStatus)).toEqual({
-            'test1': initStatus,
-            'test2': initStatus,
-            'test0-0': initStatus
-        });
-    })
-});
+import { buildTree } from '../utils/helpers';
 
 describe('test buildTree function', () => {
     test('test with empty array', () => {
