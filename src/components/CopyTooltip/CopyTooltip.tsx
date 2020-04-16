@@ -29,6 +29,8 @@ const CopyTooltip: React.FC<CopyTooltipTypes> = (props) => {
 		setCopied(false);
 	}
 
+	const title = t("Copied");
+
 	return (
 		<ClickAwayListener
 			onClickAway={handleTooltipClose}
@@ -42,7 +44,7 @@ const CopyTooltip: React.FC<CopyTooltipTypes> = (props) => {
 				}}
 				onClose={handleTooltipClose}
 				open={copied}
-				title={t("Copied")}
+				title={title}
 			>
 				<CopyToClipboard
 					text={copyText}
