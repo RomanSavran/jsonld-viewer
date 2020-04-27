@@ -58,10 +58,10 @@ const Breadcrumbs: React.FC = () => {
                 'schema'
             ].includes(path.toLowerCase());
         });
-    const gluedPath = `/v1/Context/${location.pathname.split('/').slice(3).join('/')}`
+    const gluedPath = location.pathname
         .split('/')
         .filter((s: string) => !!s);
- 
+
     return (
         <MuiBreadcrumbs
             className={classes.breadcrumbs}
@@ -78,7 +78,8 @@ const Breadcrumbs: React.FC = () => {
                         return idx > pathIndex ? acc : acc + '/' + current;
                     }, '');
                 let to = path === 'classes-hierarchy' ? `/v1/` : 
-                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/${path}` : fullPath + '/';
+                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/${path}` : 
+                        location.pathname.includes('Vocabulary') ? fullPath : fullPath + '/';
                 const label: string = t(path.split('-').join(' '));
 
                 return last ? (

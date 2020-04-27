@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import SystemAPI from '../../../services/api';
 import Spinner from '../../Spinner';
 import { Error404 } from '../../Errors';
-import { get, has, omit } from 'lodash';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import omit from 'lodash/omit';
 import ContentViewer from '../../ContentViewer';
 
 type ResultData = {

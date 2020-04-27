@@ -30,7 +30,7 @@ import {
 import TopBar from './components/TopBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { Error404 } from './components/Errors';
-import { keyBy } from 'lodash';
+import keyBy from 'lodash/keyBy';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
