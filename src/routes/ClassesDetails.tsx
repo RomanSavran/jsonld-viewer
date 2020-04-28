@@ -18,7 +18,7 @@ import {
   getRootNodes,
   pathNameToTabValue,
   tabValueToPathName,
-  extractTextForDetails,
+  extractTextForPropertyGrid
 } from '../utils/helpers';
 import {
   GeneralInformation,
@@ -153,28 +153,24 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
   ] : tabsConfig;
 
   const properties = useMemo(() => {
-    return path.split('/')
-      .filter((s: string) => !!s)
-      .map((s: string) => {
-        return propData.filter((element: any) => {
-          return element.domain.length ? element.domain.some((domain: { url: string, label: string }) => {
-            return domain.label === s;
-          }) : false
-        })
+    return propData
+    .filter((property: any) => {
+      return property.domain.some((domain: any) => {
+        return domain.url === location.pathname
       })
-      .flat()
-      .map((item: any) => {
-        return {
-          ...item,
-          label: language === 'fi' ? `${extractTextForDetails(path, item, 'fi', 'label')} (${extractTextForDetails(path, item, 'en', 'label')})` : extractTextForDetails(path, item, 'en', 'label'),
-          labelEn: extractTextForDetails(path, item, 'en', 'label'),
-          labelFi: extractTextForDetails(path, item, 'fi', 'label'),
-          commentEn: extractTextForDetails(path, item, 'en', 'comment'),
-          commentFi: extractTextForDetails(path, item, 'fi', 'comment'),
-          comment: language === 'fi' ? `${extractTextForDetails(path, item, 'fi', 'comment')} (${extractTextForDetails(path, item, 'en', 'comment')})` : extractTextForDetails(path, item, 'en', 'comment'),
-        }
-      })
-  }, [language, path, propData]);
+    })
+    .map((item: any) => {
+      return {
+        ...item,
+        label: language === 'fi' ? `${extractTextForPropertyGrid(path, item, 'fi', 'label', id)} (${extractTextForPropertyGrid(path, item, 'en', 'label', id)})` : extractTextForPropertyGrid(path, item, 'en', 'label', id),
+        labelEn: extractTextForPropertyGrid(path, item, 'en', 'label', id),
+        labelFi: extractTextForPropertyGrid(path, item, 'fi', 'label', id),
+        commentEn: extractTextForPropertyGrid(path, item, 'en', 'comment', id),
+        commentFi: extractTextForPropertyGrid(path, item, 'fi', 'comment', id),
+        comment: language === 'fi' ? `${extractTextForPropertyGrid(path, item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(path, item, 'en', 'comment', id)})` : extractTextForPropertyGrid(path, item, 'en', 'comment', id),
+      }
+    })
+  }, [location.pathname, propData, language, path, id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -183,18 +179,10 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
   }, [currentTab && id]);
 
   useEffect(() => {
-    let mounted = false;
-
     if (location.pathname[location.pathname.length - 1] !== '/' &&
       ['Context', 'General Information'].includes(currentTab)
     ) {
-      if (!mounted) {
-        setHasError(true);
-      }
-    }
-
-    return () => {
-      mounted = true;
+      setHasError(true);
     }
     /* eslint-disable-next-line */
   }, [location.pathname]);

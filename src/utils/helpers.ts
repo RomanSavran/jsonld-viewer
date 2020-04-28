@@ -256,6 +256,28 @@ function isPathInDomain(domains: string[], path: string): boolean {
         .some((s: string) => domains.includes(s));
 }
 
+export function extractTextForPropertyGrid(path: string, item: any, lang: string, type: 'label' | 'comment', id: string) {
+    const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
+    const emptyLabelText = lang === 'en' ? 'Has no label' : 'Ei etikettiä';
+    const emptyCommentText = lang === 'en' ? 'Has no description' : 'Ei kuvausta';
+    const emptyText = type === 'label' ? emptyLabelText : emptyCommentText;
+
+    if (item[type]) {
+        let [res] = item[type].filter((textObj: any) => {
+            return 'domain' in textObj && Array.isArray(textObj.domain) ? textObj.domain.includes(id) : false
+        });
+
+        if (res) {
+            const resText = res[type] ? res[type].find((textObj: any) => get(textObj, '@language') === language) : null;
+            return resText ? get(resText, '@value') : emptyText;
+        }
+
+        return emptyText;
+    }
+
+    return emptyText;
+}
+
 export function extractTextForDetails(path: string, item: any, lang: string, type: 'label' | 'comment') {
     const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
     const emptyLabelText = lang === 'en' ? 'Has no label' : 'Ei etikettiä';
@@ -264,10 +286,16 @@ export function extractTextForDetails(path: string, item: any, lang: string, typ
     if (item[type]) {
         let res = item[type].map((element: any) => {
             if (!get(element, 'domain')) {
+                if (!element[type]) {
+                    return '';
+                }
                 const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
                 
                 return textByLang ? get(textByLang, '@value') : '';
             } else if (get(element, 'domain') && isPathInDomain(get(element, 'domain'), path)) {
+                if (!element[type]) {
+                    return '';
+                }
                 const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
                 
                 return textByLang ? get(textByLang, '@value') : '';

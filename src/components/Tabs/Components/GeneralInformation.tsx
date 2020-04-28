@@ -117,7 +117,7 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 		{id: 'commentFi', label: 'Description (en-us)'},
 		{id: 'range', label: 'Range'}
 	] : initHeaders;
-	
+
 	return (
 		<div>
 			<Info 
