@@ -1,4 +1,6 @@
-import { values, has, get } from 'lodash';
+import values from 'lodash/values';
+import has from 'lodash/has';
+import get from 'lodash/get';
 import sizeof from 'object-sizeof';
 
 type TextType = {
@@ -249,14 +251,7 @@ export function extractProperties(data: any): { [key: string]: PropertyTypes } {
         }, {});
 };
 
-function isPathInDomain(domains: string[], path: string): boolean {
-    return path
-        .split('/')
-        .filter((s: string) => !!s)
-        .some((s: string) => domains.includes(s));
-}
-
-export function extractTextForPropertyGrid(path: string, item: any, lang: string, type: 'label' | 'comment', id: string) {
+export function extractTextForPropertyGrid(item: any, lang: string, type: 'label' | 'comment', id: string) {
     const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
     const emptyLabelText = lang === 'en' ? 'Has no label' : 'Ei etikettiä';
     const emptyCommentText = lang === 'en' ? 'Has no description' : 'Ei kuvausta';
@@ -276,41 +271,6 @@ export function extractTextForPropertyGrid(path: string, item: any, lang: string
     }
 
     return emptyText;
-}
-
-export function extractTextForDetails(path: string, item: any, lang: string, type: 'label' | 'comment') {
-    const language: 'en-us' | 'fi-fi' = lang === 'en' ? 'en-us' : 'fi-fi';
-    const emptyLabelText = lang === 'en' ? 'Has no label' : 'Ei etikettiä';
-    const emptyCommentText = lang === 'en' ? 'Has no description' : 'Ei kuvausta';
-
-    if (item[type]) {
-        let res = item[type].map((element: any) => {
-            if (!get(element, 'domain')) {
-                if (!element[type]) {
-                    return '';
-                }
-                const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
-                
-                return textByLang ? get(textByLang, '@value') : '';
-            } else if (get(element, 'domain') && isPathInDomain(get(element, 'domain'), path)) {
-                if (!element[type]) {
-                    return '';
-                }
-                const textByLang = element[type].find((k: TextType) => get(k, '@language') === language);
-                
-                return textByLang ? get(textByLang, '@value') : '';
-            }
-
-            return ''
-        })
-        .filter((s: string) => !!s)
-        .join('');
-
-        return !res && type === 'label' ? emptyLabelText :
-                !res && type === 'comment' ? emptyCommentText : res;
-    }
-
-    return type === 'label' ? emptyLabelText : emptyCommentText;
 }
 
 export function extractTextForGrid<T extends object>(item: T, language: string, type: 'label' | 'comment') {
@@ -344,6 +304,14 @@ export function pathNameToTabValue(path: string): string {
             return 'dataexample';
         case 'schema':
             return 'jsonschema';
+        case 'parameterscontext':
+            return 'parameterscontext';
+        case 'parametersjsonschema':
+            return 'parametersjsonschema';
+        case 'outputcontext':
+            return 'outputcontext';
+        case 'dataexampleparameters':
+            return 'dataexampleparameters';
         default :
             return 'generalinformation'
     }
@@ -364,7 +332,7 @@ export function tabValueToPathName(tabValue: string): string {
         case 'dataexample':
             return 'Context'
         default :
-            return tabValue
+            return 'Context'
     }
 }
 
@@ -393,5 +361,67 @@ export function getMainDataByContent<T extends object>(content: T): {content: T,
         content,
         size,
         sloc
+    }
+}
+
+export function getURIListById(id: string) {
+    switch(id) {
+        case 'DataProductContext':
+            return [
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/',
+                    title: 'DataProductParametersContext'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/',
+                    title: 'DataProductParametersSchema'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/',
+                    title: "DataProductOutputContext"
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/',
+                    title: 'DataProductOutputSchema'
+                }
+            ]
+        case 'SensorDataProductContext':
+            return [
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/SensorDataProductParameters/',
+                    title: 'SensorDataProductParametersContext'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/SensorDataProductParameters/',
+                    title: 'SensorDataProductParametersSchema'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/SensorDataProductOutput/',
+                    title: "SensorDataProductOutputContext"
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/SensorDataProductOutput/',
+                    title: 'SensorDataProductOutputSchema'
+                }
+            ]
+        case 'LtifDataProductContext':
+            return [
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/LtifDataProductParameters/',
+                    title: 'LtifDataProductParametersContext'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/LtifDataProductParameters/',
+                    title: 'LtifDataProductParametersSchema'
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/LtifDataProductOutput/',
+                    title: "LtifDataProductOutputContext"
+                },
+                {
+                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/LtifDataProductOutput/',
+                    title: 'LtifDataProductOutputSchema'
+                }
+            ]
     }
 }

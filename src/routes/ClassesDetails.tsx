@@ -18,7 +18,8 @@ import {
   getRootNodes,
   pathNameToTabValue,
   tabValueToPathName,
-  extractTextForPropertyGrid
+  extractTextForPropertyGrid,
+  getURIListById
 } from '../utils/helpers';
 import {
   GeneralInformation,
@@ -26,7 +27,12 @@ import {
   ClassDefinition,
   Context,
   DataExample,
-  JSONSchema
+  JSONSchema,
+  ParametersContext,
+  ParametersSchema,
+  OutputContext,
+  OutputSchema,
+  DataExampleParameters
 } from '../components/Tabs/Components';
 import { Error404 } from '../components/Errors';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +68,7 @@ const useStyles = makeStyles((theme) =>
       padding: '15px 25px',
       color: '#4C4C51',
       transition: 'color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('md')]: {
         padding: '10px'
       }
     },
@@ -76,7 +82,7 @@ const useStyles = makeStyles((theme) =>
     },
     tabSelected: {
       color: '#fff',
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('md')]: {
         background: '#0095FF',
         transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
         outline: 'none'
@@ -84,19 +90,19 @@ const useStyles = makeStyles((theme) =>
     },
     tabsRoot: {
       borderBottom: '2px solid #0095ff',
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('md')]: {
         border: 'none'
       }
     },
     tabsIndicator: {
       height: '100%',
       background: '#0095FF',
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('md')]: {
         display: 'none'
       }
     },
     tabsFlexContainer: {
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('md')]: {
         display: 'flex',
         flexWrap: 'wrap'
       }
@@ -104,7 +110,10 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propData }) => {
+const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ 
+  classesList, 
+  propData 
+}) => {
   const classes = useStyles();
   const theme: Theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -112,6 +121,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
   const location = useLocation();
   const history = useHistory();
   const isDesktop: boolean = !useMediaQuery(theme.breakpoints.down('md'));
+  const lgAndMdView = useMediaQuery(theme.breakpoints.between('md', 'lg'));
   const [hasError, setHasError] = useState(false);
   const path: string = location.pathname
     .split('/')
@@ -133,6 +143,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
   const [filter, handleFilterChange] = useState('');
 
   const element: any = classesList.find(item => item.id === id);
+
   const isOnlyVocabulary: boolean = path
     .split('/')
     .some((s: string) => {
@@ -147,9 +158,11 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
     { value: 'vocabulary', label: 'Vocabulary' }
   ] : isOnlyContext && !isOnlyVocabulary ? [
     { value: 'generalinformation', label: 'General Information' },
-    { value: 'context', label: 'Context' },
-    { value: 'jsonschema', label: "JSON Schema" },
-    { value: 'dataexample', label: 'Data Example' }
+    { value: 'parameterscontext', label: 'Parameters Context' },
+    { value: 'parametersjsonschema', label: 'Parameters JSON Schema' },
+    { value: 'outputcontext', label: 'Output Context' },
+    { value: 'outputjsonschema', label: 'Output JSON Schema' },
+    { value: 'dataexampleparameters', label: 'Data Example' }
   ] : tabsConfig;
 
   const properties = useMemo(() => {
@@ -162,15 +175,15 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
     .map((item: any) => {
       return {
         ...item,
-        label: language === 'fi' ? `${extractTextForPropertyGrid(path, item, 'fi', 'label', id)} (${extractTextForPropertyGrid(path, item, 'en', 'label', id)})` : extractTextForPropertyGrid(path, item, 'en', 'label', id),
-        labelEn: extractTextForPropertyGrid(path, item, 'en', 'label', id),
-        labelFi: extractTextForPropertyGrid(path, item, 'fi', 'label', id),
-        commentEn: extractTextForPropertyGrid(path, item, 'en', 'comment', id),
-        commentFi: extractTextForPropertyGrid(path, item, 'fi', 'comment', id),
-        comment: language === 'fi' ? `${extractTextForPropertyGrid(path, item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(path, item, 'en', 'comment', id)})` : extractTextForPropertyGrid(path, item, 'en', 'comment', id),
+        label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),
+        labelEn: extractTextForPropertyGrid(item, 'en', 'label', id),
+        labelFi: extractTextForPropertyGrid(item, 'fi', 'label', id),
+        commentEn: extractTextForPropertyGrid(item, 'en', 'comment', id),
+        commentFi: extractTextForPropertyGrid(item, 'fi', 'comment', id),
+        comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
       }
     })
-  }, [location.pathname, propData, language, path, id]);
+  }, [location.pathname, propData, language, id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -179,7 +192,9 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
   }, [currentTab && id]);
 
   useEffect(() => {
-    if (location.pathname[location.pathname.length - 1] !== '/' &&
+    setHasError(false);
+    if (
+      location.pathname[location.pathname.length - 1] !== '/' &&
       ['Context', 'General Information'].includes(currentTab)
     ) {
       setHasError(true);
@@ -194,7 +209,16 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     const newPath = `/v1/${tabValueToPathName(newValue)}/${path}`.concat(
-      ['context', 'generalinformation', 'dataexample'].includes(newValue) ? '/' : ''
+      [
+        'context', 
+        'generalinformation', 
+        'dataexample', 
+        'parameterscontext',
+        'parametersjsonschema',
+        'outputcontext',
+        'outputjsonschema',
+        'dataexampleparameters'
+      ].includes(newValue) ? '/' : ''
     );
     setTabValue(newValue);
     history.push(newPath);
@@ -202,6 +226,9 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
 
   const classesTree = useMemo(() => buildTree(classesList), [classesList]);
   const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
+  
+  if (!element) return <Error404 />
+
   const labelEn = element.labelEn || 'Has no label';
   const labelFi = element.labelFi || 'Ei etikettiä';
   const commentEn = element.commentEn || 'Has no description';
@@ -213,6 +240,8 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
     comment: language === 'en' ? commentEn : `${commentFi} (${commentEn})`,
     superclasses
   } : null;
+
+  const uriList = isOnlyContext ? getURIListById(id) : null;
 
   return (
     <Grid
@@ -253,6 +282,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
                   indicator: classes.tabsIndicator,
                   flexContainer: classes.tabsFlexContainer
                 }}
+                variant={lgAndMdView ? "scrollable" : "standard"}
                 value={tabValue}
                 onChange={handleTabChange}
                 aria-label="Tabs"
@@ -279,12 +309,18 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ classesList, propDat
                   id={id}
                   type="class"
                   shouldTreeView={shouldTreeView}
+                  uriList={uriList}
                 />}
                 {tabValue === 'context' && <Context path={path} />}
+                {tabValue === 'parameterscontext' && <ParametersContext />}
+                {tabValue === 'parametersjsonschema' && <ParametersSchema />}
+                {tabValue === 'outputcontext' && <OutputContext />}
+                {tabValue === 'outputjsonschema' && <OutputSchema />}
                 {tabValue === 'vocabulary' && <Vocabulary path={location.pathname} />}
                 {tabValue === 'classdefinitions' && <ClassDefinition path={location.pathname} />}
                 {tabValue === 'jsonschema' && <JSONSchema />}
                 {tabValue === 'dataexample' && <DataExample path={location.pathname} />}
+                {tabValue === 'dataexampleparameters' && <DataExampleParameters />}
               </div>
             </>
           )

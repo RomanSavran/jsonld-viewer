@@ -52,7 +52,8 @@ type GeneralInformationTypes = {
 	type: 'class' | 'prop',
 	classesData?: ClassItemType[],
 	data?: any,
-	shouldTreeView: boolean
+	shouldTreeView: boolean,
+	uriList?: any
 }
 
 const initHeaders: Array<{id: string, label: string}> = [
@@ -73,7 +74,8 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 		properties,
 		data,
 		type,
-		shouldTreeView
+		shouldTreeView,
+		uriList
 	} = props;
 	const location = useLocation();
 	
@@ -128,6 +130,7 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 				superclasses={superclasses}
 				uri={uri}
 				type={type}
+				uriList={uriList}
 			/>
 			<div>
 				<h4 className={classes.itemTitle}>{t('Usage')}</h4>

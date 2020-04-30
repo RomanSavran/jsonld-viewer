@@ -10,7 +10,7 @@ type PropertyInfoProp = {
 }
 
 const headers: Array<{id: string, label: string}> = [
-    {id: 'id', label: 'class'},
+    {id: 'id', label: 'Class'},
     {id: 'subClass', label: 'Parent classes'},
     {id: 'commentEn', label: 'Description'}
 ]
@@ -45,7 +45,7 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
     });
 
     const headersByLanguage = i18n.language === 'en' ? headers : [
-        {id: 'id', label: 'class'},
+        {id: 'id', label: 'Class'},
         {id: 'subClass', label: 'Parent classes'},
         {id: 'commentEn', label: 'Description (en-us)'},
         {id: 'commentFi', label: 'Description (fi-fi)'}

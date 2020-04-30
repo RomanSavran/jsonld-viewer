@@ -6,6 +6,7 @@ import {
     IconButton
 } from '@material-ui/core';
 import clsx from 'clsx';
+import URI from '../URI';
 import CopyTooltip from '../CopyTooltip';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -19,7 +20,8 @@ type InfoProps = {
     superclasses: string[],
     isOnlyVocabulary: boolean,
     uri: string,
-    type: 'class' | 'prop'
+    type: 'class' | 'prop',
+    uriList?: Array<{uri: string, title: string}>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -30,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
             lineHeight: '37px',
             textTransform: 'capitalize',
             [theme.breakpoints.down('md')]: {
-                fontSize: 25
+                fontSize: 20
             }
         },
         h2Prop: {
@@ -131,17 +133,17 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const Info: React.FC<InfoProps> = (props) => {
+const Info: React.FC<InfoProps> = ({
+    id,
+    label,
+    comment,
+    superclasses,
+    isOnlyVocabulary,
+    uri,
+    type,
+    uriList = null,
+}) => {
     const classes = useStyles();
-    const {
-        id,
-        label,
-        comment,
-        superclasses,
-        isOnlyVocabulary,
-        uri,
-        type
-    } = props;
     const { t } = useTranslation();
 
     return (
@@ -150,7 +152,11 @@ const Info: React.FC<InfoProps> = (props) => {
                 [classes.h2Prop]: type === 'prop'
             })}>{id}</h2>
             <div className={classes.descriptionWrapper}>
-                {
+                {uriList ? (
+                    <div className={classes.descriptionItem}>
+                        <URI uri={uriList} />
+                    </div>
+                ) : (
                     !isOnlyVocabulary ? (
                         <div className={classes.descriptionItem}>
                             <div className={classes.copyWrapper}>
@@ -186,7 +192,7 @@ const Info: React.FC<InfoProps> = (props) => {
                             </a>
                         </div>
                     ) : null
-                }
+                )}
                 <div className={classes.descriptionItem}>
                     <h4 className={classes.itemTitle}>{t("Label")}</h4>
                     <p className={classes.text}>{label}</p>

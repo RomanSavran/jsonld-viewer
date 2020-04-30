@@ -52,5 +52,11 @@
     "JSON Schema": "JSON-kaavio",
     "Copy": "Kopio",
     "Property category": "Omaisuusluokka",
-    "Domain": "Verkkotunnuksen"
+    "Domain": "Verkkotunnuksen",
+    "Parameters Context": "Parametrien konteksti",
+    "Parameters JSON Schema": "Parametrit JSON-skeema",
+    "Output Context": "Tuloskonteksti",
+    "Output JSON Schema": "Tulos JSON-kaavio",
+    "Parameters": "Parametrit",
+    "Output": "Ulostulo"
 }
