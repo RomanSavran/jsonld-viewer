@@ -117,7 +117,7 @@ const JSONSchema: React.FC = () => {
     if (value.error) return <Error404 />
     if (value.loading && !value.error) return <Spinner />
 
-    const uri = `https://standards-ontotest.oftrust.net/v1/Schema${mainPath}`;
+    const uri = window.location.href;
 
     return (
         <>

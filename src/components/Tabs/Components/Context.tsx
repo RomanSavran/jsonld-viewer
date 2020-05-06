@@ -114,7 +114,7 @@ const Context: React.FC<ContextProps> = (props) => {
 
     return (
         <MainTab
-            uri={`https://standards-ontotest.oftrust.net${query}`}
+            uri={window.location.href}
             size={value.size}
             sloc={value.sloc}
             content={value.content}

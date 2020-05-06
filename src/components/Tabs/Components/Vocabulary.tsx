@@ -89,7 +89,7 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
 
     return (
         <MainTab
-            uri={`https://standards-ontotest.oftrust.net${path}`}
+            uri={window.location.href}
             size={value.size}
             sloc={value.sloc}
             content={value.content}

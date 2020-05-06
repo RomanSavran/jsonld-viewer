@@ -166,7 +166,7 @@ const Info: React.FC<InfoProps> = ({
                                     {type === 'class' ? t('Context URI') : t('Vocabulary URI')}
                                 </h4>
                                 <CopyTooltip
-                                    copyText={uri}
+                                    copyText={window.location.href}
                                     placement="right"
                                 >
                                     <IconButton
@@ -184,11 +184,11 @@ const Info: React.FC<InfoProps> = ({
                             </div>
                             <a
                                 className={classes.link}
-                                href={uri}
+                                href={window.location.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                {uri}
+                                {window.location.href}
                             </a>
                         </div>
                     ) : null

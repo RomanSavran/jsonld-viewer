@@ -212,11 +212,11 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
       [
         'context', 
         'generalinformation', 
-        'dataexample', 
         'parameterscontext',
         'parametersjsonschema',
         'outputcontext',
         'outputjsonschema',
+        'dataexample',
         'dataexampleparameters'
       ].includes(newValue) ? '/' : ''
     );

@@ -162,6 +162,12 @@ export function App() {
 								propData={propData}
 							/>
 						)} />
+						<Route path="/v1/Example/*" render={() => (
+							<ClassesDetails
+								classesList={classesList}
+								propData={propData}
+							/>
+						)} />
 						<Route path="/v1/Vocabulary/*" render={({ match }) => {
 							const isClass = match.url.split('/')
 								.some((s: string) => {
