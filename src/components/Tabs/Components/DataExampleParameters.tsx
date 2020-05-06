@@ -46,23 +46,23 @@ const DataExampleParameters: React.FC = () => {
                 const parameters = await SystemAPI.getData(`/v1/DataExample/${parametersPath}`);
                 const output = await SystemAPI.getData(`/v1/DataExample/${outputPath}`);
 
-                if (typeof parameters === 'number' || typeof output === 'number') {
-                    setValue({
-                      data: null,
-                      loading: false,
-                      error: true
-                    })
-                  }
-
                 if (!mounted) {
-                    setValue({
-                        data: {
-                            parameters,
-                            output
-                        },
-                        loading: false,
-                        error: false
-                    })
+                    if (typeof parameters === 'number' || typeof output === 'number') {
+                        setValue({
+                          data: null,
+                          loading: false,
+                          error: true
+                        })
+                    } else {
+                        setValue({
+                            data: {
+                                parameters,
+                                output
+                            },
+                            loading: false,
+                            error: false
+                        })
+                    }
                 }
             } catch {
                 setValue({
@@ -76,7 +76,7 @@ const DataExampleParameters: React.FC = () => {
         return () => {
             mounted = true;
         }
-    })
+    }, [parametersPath, outputPath])
 
     function renderOutput(data: any) {
         if (Array.isArray(data)) {

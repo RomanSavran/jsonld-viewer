@@ -35,20 +35,20 @@ const ParametersContext: React.FC = () => {
       try {
         const data = await SystemAPI.getData(`/v1/Context/${path}/`);
         
-        if (typeof data === 'number') {
-          setValue({
-            data: null,
-            loading: false,
-            error: true
-          })
-        }
-
         if (!mounted) {
-          setValue({
-            data,
-            loading: false,
-            error: false
-          })
+          if (typeof data === 'number') {
+            setValue({
+              data: null,
+              loading: false,
+              error: true
+            })
+          } else {
+            setValue({
+              data,
+              loading: false,
+              error: false
+            })
+          }
         }
       } catch {
         setValue({

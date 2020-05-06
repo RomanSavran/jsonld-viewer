@@ -33,21 +33,21 @@ const OutputSchema: React.FC = () => {
     (async function () {
       try {
         const data = await SystemAPI.getData(`/v1/Schema/${path}`);
-
-        if (typeof data === 'number') {
-          setValue({
-            data: null,
-            loading: false,
-            error: true
-          })
-        }
         
         if (!mounted) {
-          setValue({
-            data,
-            loading: false,
-            error: false
-          })
+          if (typeof data === 'number') {
+            setValue({
+              data: null,
+              loading: false,
+              error: true
+            })
+          } else {
+            setValue({
+              data,
+              loading: false,
+              error: false
+            })
+          }
         }
       } catch {
         setValue({
