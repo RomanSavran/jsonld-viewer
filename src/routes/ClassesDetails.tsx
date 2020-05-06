@@ -126,7 +126,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   const path: string = location.pathname
     .split('/')
     .filter(s => (
-      !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
+      !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
     ))
     .join('/');
   const currentTab: string = location.pathname.split('/v1/').pop()?.split('/')[0] || '';
@@ -216,7 +216,6 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
         'parametersjsonschema',
         'outputcontext',
         'outputjsonschema',
-        'dataexample',
         'dataexampleparameters'
       ].includes(newValue) ? '/' : ''
     );

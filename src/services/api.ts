@@ -1,5 +1,5 @@
 class GithubAPI {
-    private _baseLink: string = 'https://standards-ontotest.oftrust.net';
+    private _baseLink: string = process.env.NODE_ENV === 'development' ? 'https://peaceful-springs-53690.herokuapp.com' : window.location.origin;
 
     getData = async (path: string) => {
         const url = `${this._baseLink}${path}`;

@@ -162,7 +162,7 @@ export function App() {
 								propData={propData}
 							/>
 						)} />
-						<Route path="/v1/Example/*" render={() => (
+						<Route path="/v1/DataExample/*" render={() => (
 							<ClassesDetails
 								classesList={classesList}
 								propData={propData}

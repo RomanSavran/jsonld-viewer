@@ -34,7 +34,6 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
         .split('/')
         .filter(s => !!s)
         .pop() || '';
-    console.log(path);
 
     useEffect(() => {
         let mounted = false;

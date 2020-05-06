@@ -330,7 +330,7 @@ export function tabValueToPathName(tabValue: string): string {
         case 'jsonschema':
             return 'Schema';
         case 'dataexample':
-            return 'Context'
+            return 'DataExample'
         default :
             return 'Context'
     }
