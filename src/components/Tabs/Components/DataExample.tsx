@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import SystemAPI from '../../../services/api';
 import Spinner from '../../Spinner';
 import { Error404 } from '../../Errors';
-import get from 'lodash/get';
-import has from 'lodash/has';
-import omit from 'lodash/omit';
 import ContentViewer from '../../ContentViewer';
 
 type ResultData = {
@@ -69,38 +66,10 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
         }
     }, [path, id]);
 
-    if (value.error) return <Error404 />
-    if (value.loading && !value.error) return <Spinner />
+    const {error, loading, data} = value;
 
-    const context: any = omit(get(value.data, '@context'), ['@version', '@vocab', '@classDefinition', 'pot']);
-
-    const properties: { [key: string]: ContextData } = Object.keys(context)
-        .filter(key => !!has(context[key], '@nest'))
-        .reduce((acc, current) => ({...acc, [current]: context[current]}), {});
-
-    const parents: {[key: string]: string} = Object.keys(context)
-        .filter(key => !has(context[key], '@nest'))
-        .sort()
-        .reduce((acc, current) => ({...acc, [current]: ""}), {});
-
-    const initObj: {[key: string]: string} = !['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id) ? {
-        "@context": `https://standards-ontotest.oftrust.net${path}`,
-        "id": "",
-        "data": "",
-        "metadata": "",
-        ...parents
-    } : {};
-
-    const data: ResultData = Object.keys(properties).reduce(
-        (acc: any, current) => {
-            const nest: string = get(properties[current], '@nest') || '';
-
-            acc[nest] = typeof acc[nest] === 'string' ? { [current]: "" } : Object.assign({}, acc[nest], { [current]: "" })
-
-            return acc;
-        },
-        initObj
-    );
+    if (error) return <Error404 />
+    if (loading && !error) return <Spinner />
 
     return (
         <ContentViewer 
