@@ -1,46 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Grid
 } from '@material-ui/core';
 import ContentViewer from '../../ContentViewer';
-import DataProductParametersExample from '../../../assets/custom-classes/DataContext/DataProductParametersExample.json';
-import DataProductOutputExample from '../../../assets/custom-classes/DataContext/DataProductOutputExample.json';
-import SensorDataProductParametersExample from '../../../assets/custom-classes/DataContext/SensorDataProductContext/SensorDataProductParametersExample.json';
-import SensorDataProductOutputExample from '../../../assets/custom-classes/DataContext/SensorDataProductContext/SensorDataProductOutputExample.json';
-import LtifDataProductParametersExample from '../../../assets/custom-classes/DataContext/LtifDataProductContext/LtifDataProductParametersExample.json';
-import LtifDataProductOutputExample from '../../../assets/custom-classes/DataContext/LtifDataProductContext/LtifDataProductOutputExample.json';
+import SystemAPI from '../../../services/api';
+import Spinner from '../../Spinner'
+import { Error404 } from '../../Errors';
 
-function getDataExample(id: string) {
-    switch (id) {
-        case 'DataProductContext':
-            return {
-                parameters: DataProductParametersExample,
-                output: DataProductOutputExample
-            }
-        case 'SensorDataProductContext':
-            return {
-                parameters: SensorDataProductParametersExample,
-                output: SensorDataProductOutputExample
-            }
-        case 'LtifDataProductContext':
-            return {
-                parameters: LtifDataProductParametersExample,
-                output: LtifDataProductOutputExample
-            }
-        default:
-            return null;
-    }
+function getPath(pathname: string, view: 'Parameters' | 'Output') {
+    return pathname
+        .split('/')
+        .filter(s => (
+            !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
+        ))
+        .map(s => {
+            return s.replace('Context', view)
+        })
+        .join('/')
 }
 
 const DataExampleParameters: React.FC = () => {
+    const [value, setValue] = useState<{
+        data: null | {parameters: any, output: any},
+        loading: boolean,
+        error: boolean
+    }>({
+        data: null,
+        loading: true,
+        error: false
+    })
     const location = useLocation();
+    const parametersPath = getPath(location.pathname, 'Parameters');
+    const outputPath = getPath(location.pathname, 'Output');
     const id = location.pathname
         .split('/')
         .filter(s => !!s)
         .pop() || '';
 
-    const currentJSON = getDataExample(id);
+    useEffect(() => {
+        let mounted = false;
+
+        (async function () {
+            try {
+                const parameters = await SystemAPI.getData(`/v1/DataExample/${parametersPath}`);
+                const output = await SystemAPI.getData(`/v1/DataExample/${outputPath}`);
+                if (!mounted) {
+                    setValue({
+                        data: {
+                            parameters,
+                            output
+                        },
+                        loading: false,
+                        error: false
+                    })
+                }
+            } catch {
+                setValue({
+                    data: null,
+                    loading: false,
+                    error: true
+                })
+            }
+        })();
+
+        return () => {
+            mounted = true;
+        }
+    })
 
     function renderOutput(data: any) {
         if (Array.isArray(data)) {
@@ -73,7 +100,10 @@ const DataExampleParameters: React.FC = () => {
         }
     }
 
-    if (!currentJSON) return null;
+    const { data, loading, error } = value;
+
+    if (error) return <Error404 />
+    if (loading && !error) return <Spinner />
 
     return (
         <Grid
@@ -87,7 +117,7 @@ const DataExampleParameters: React.FC = () => {
             >
                 <ContentViewer
                     title="Parameters"
-                    content={currentJSON.parameters}
+                    content={data?.parameters}
                     playground={true}
                     fileName={`${id}OutputSchema.jsonld`}
                     subclasses
@@ -98,7 +128,7 @@ const DataExampleParameters: React.FC = () => {
                 sm={6}
                 xs={12}
             >
-                {renderOutput(currentJSON.output)}
+                {renderOutput(data?.output)}
             </Grid>
         </Grid>
     )

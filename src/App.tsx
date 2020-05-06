@@ -82,43 +82,20 @@ export function App() {
 	if (value.loading) return <Spinner />
 
 	const { data } = value;
-	const classesList: Array<{ [key: string]: string }> = [
-		{
-			url: '/v1/Context/DataProductContext/',
-			id: 'DataProductContext',
-			labelEn: '',
-			labelFi: '',
-			commentEn: '',
-			commentFi: '',
-			subClass: '',
-		},
-		{
-			url: '/v1/Context/DataProductContext/SensorDataProductContext/',
-			id: 'SensorDataProductContext',
-			labelEn: '',
-			labelFi: '',
-			commentEn: '',
-			commentFi: '',
-			subClass: 'DataProductContext'
-		},
-		{
-			url: '/v1/Context/DataProductContext/LtifDataProductContext/',
-			id: 'LtifDataProductContext',
-			labelEn: '',
-			labelFi: '',
-			commentEn: '',
-			commentFi: '',
-			subClass: 'DataProductContext'
-		}
-	];
-	const propertiesData: [] = [];
+	const classesList: Array<{ [key: string]: string }> = [];
+	const propertiesData: any = [];
 	const otherData: IdElementType[] = [];
 
-	data.forEach(element => {
+	const filteredList = ['AnnotationEntity', 'DataProductOutput', 'DataProductParameters', 'PhysicalProperty', 'Technical', 'UnitOfMeasure'];
+
+	data.forEach((element: any) => {
 		if ('@type' in element) {
 			const type: string = element['@type'][0];
 			if (type.includes('owl#Class')) {
-				classesList.push(modifyClassElement(element));
+				const isValidClass = !filteredList.some(entity => element['@id'].includes(entity));
+				if (isValidClass) {
+					classesList.push(modifyClassElement(element));
+				}
 			} else if (type.includes('owl#DatatypeProperty')) {
 				propertiesData.push(element)
 			}

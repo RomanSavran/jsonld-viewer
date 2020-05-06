@@ -240,7 +240,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     superclasses
   } : null;
 
-  const uriList = isOnlyContext ? getURIListById(id) : null;
+  const uriList = isOnlyContext ? getURIListById(path) : null;
 
   return (
     <Grid

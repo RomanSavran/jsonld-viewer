@@ -83,7 +83,7 @@ export function modifyClassElement(classElement: any) {
     const isContext: boolean = partialPath
         .split('/')
         .some((s: string) => {
-            return ['Identity', 'Link'].includes(s)
+            return ['Identity', 'Link', 'DataProductContext'].includes(s)
         });
     const parentBody = has(classElement, parentKey) ? get(classElement, parentKey).pop() : null;
     const parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
@@ -364,64 +364,28 @@ export function getMainDataByContent<T extends object>(content: T): {content: T,
     }
 }
 
-export function getURIListById(id: string) {
-    switch(id) {
-        case 'DataProductContext':
-            return [
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/',
-                    title: 'DataProductParametersContext'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/',
-                    title: 'DataProductParametersSchema'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/',
-                    title: "DataProductOutputContext"
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/',
-                    title: 'DataProductOutputSchema'
-                }
-            ]
-        case 'SensorDataProductContext':
-            return [
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/SensorDataProductParameters/',
-                    title: 'SensorDataProductParametersContext'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/SensorDataProductParameters/',
-                    title: 'SensorDataProductParametersSchema'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/SensorDataProductOutput/',
-                    title: "SensorDataProductOutputContext"
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/SensorDataProductOutput/',
-                    title: 'SensorDataProductOutputSchema'
-                }
-            ]
-        case 'LtifDataProductContext':
-            return [
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductParameters/LtifDataProductParameters/',
-                    title: 'LtifDataProductParametersContext'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductParameters/LtifDataProductParameters/',
-                    title: 'LtifDataProductParametersSchema'
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Context/DataProductOutput/LtifDataProductOutput/',
-                    title: "LtifDataProductOutputContext"
-                },
-                {
-                    uri: 'https://standards-ontotest.oftrust.net/v1/Schema/DataProductOutput/LtifDataProductOutput/',
-                    title: 'LtifDataProductOutputSchema'
-                }
-            ]
-    }
+export function getURIListById(path: string) {
+    const parametersContext = `${window.location.origin}/v1/Context/${path.replace('Context', 'Parameters')}/`;
+    const parametersSchema = `${window.location.origin}/v1/Schema/${path.replace('Context', 'Parameters')}`;
+    const outputContext = `${window.location.origin}/v1/Context/${path.replace('Context', 'Output')}/`;
+    const outputSchema = `${window.location.origin}/v1/Schema/${path.replace('Context', 'Output')}/`;
+
+    return [
+        {
+            uri: parametersContext,
+            title: 'ParametersContext',
+        },
+        {
+            uri: parametersSchema,
+            title: 'ParametersSchema',
+        },
+        {
+            uri: outputContext,
+            title: 'OutputContext',
+        },
+        {
+            uri: outputSchema,
+            title: 'OutputSchema',
+        }
+    ]
 }
