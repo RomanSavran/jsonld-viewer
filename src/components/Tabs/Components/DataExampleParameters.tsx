@@ -45,6 +45,15 @@ const DataExampleParameters: React.FC = () => {
             try {
                 const parameters = await SystemAPI.getData(`/v1/DataExample/${parametersPath}`);
                 const output = await SystemAPI.getData(`/v1/DataExample/${outputPath}`);
+
+                if (typeof parameters === 'number' || typeof output === 'number') {
+                    setValue({
+                      data: null,
+                      loading: false,
+                      error: true
+                    })
+                  }
+
                 if (!mounted) {
                     setValue({
                         data: {
