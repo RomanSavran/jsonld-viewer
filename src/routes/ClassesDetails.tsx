@@ -32,7 +32,8 @@ import {
   ParametersSchema,
   OutputContext,
   OutputSchema,
-  DataExampleParameters
+  DataExampleParameters,
+  GeneralInformationDataProduct
 } from '../components/Tabs/Components';
 import { Error404 } from '../components/Errors';
 import { useTranslation } from 'react-i18next';
@@ -211,7 +212,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     const newPath = `/v1/${tabValueToPathName(newValue)}/${path}`.concat(
       [
         'context', 
-        'generalinformation', 
+        'generalinformation',
         'dataexample', 
         'parameterscontext',
         'parametersjsonschema',
@@ -242,6 +243,23 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   } : null;
 
   const uriList = isOnlyContext ? getURIListById(id) : null;
+
+  const generalinfo = id.includes('DataProductContext') ? (
+    <GeneralInformationDataProduct 
+      data={data}
+      id={id}
+      uriList={uriList}
+    />
+  ) : (
+    <GeneralInformation
+      data={data}
+      properties={properties}
+      id={id}
+      type="class"
+      shouldTreeView={shouldTreeView}
+      uriList={uriList}
+    />
+  );
 
   return (
     <Grid
@@ -303,14 +321,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
                 })}
               </Tabs>
               <div>
-                {tabValue === 'generalinformation' && <GeneralInformation
-                  data={data}
-                  properties={properties}
-                  id={id}
-                  type="class"
-                  shouldTreeView={shouldTreeView}
-                  uriList={uriList}
-                />}
+                {tabValue === 'generalinformation' && generalinfo}
                 {tabValue === 'context' && <Context path={path} />}
                 {tabValue === 'parameterscontext' && <ParametersContext />}
                 {tabValue === 'parametersjsonschema' && <ParametersSchema />}

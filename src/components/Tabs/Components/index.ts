@@ -10,6 +10,7 @@ import ParametersSchema from './ParametersSchema';
 import OutputContext from './OutputContext';
 import OutputSchema from './OutputSchema';
 import DataExampleParameters from './DataExampleParameters';
+import GeneralInformationDataProduct from './GenerailInformationDataProduct';
 
 export {
     OutputSchema,
@@ -23,5 +24,6 @@ export {
     JSONSchema,
     ParametersContext,
     ParametersSchema,
-    DataExampleParameters
+    DataExampleParameters,
+    GeneralInformationDataProduct
 };
