@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) =>
     createStyles({
         itemDescription: {
             marginTop: 30,
-			marginBottom: 30,
 			padding: '20px 15px',
 			background: 'rgb(235, 240, 248)',
 			overflow: 'hidden',
@@ -78,7 +77,7 @@ const URI: React.FC<URIProps> = ({
 
     return (
         <div className={clsx(classes.itemDescription, {
-            [classes.itemDescrQ]: uri.length > 1
+            [classes.itemDescrQ]: uri.length > 2
         })}>
             {uri.map(item => {
                 return (

@@ -3,10 +3,11 @@ import SystemAPI from '../../../services/api';
 import Spinner from '../../Spinner';
 import { Error404 } from '../../Errors';
 import ContentViewer from '../../ContentViewer';
+import URI from '../../URI';
 
 type ResultData = {
     "@context": string
-    [key: string] : {[key: string]: string} | string
+    [key: string]: { [key: string]: string } | string
 }
 
 type ContextData = {
@@ -35,48 +36,48 @@ const DataExample: React.FC<DataExampleProps> = (props) => {
     useEffect(() => {
         let mounted = false;
 
-        if (!['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id)) {
-            SystemAPI.getData(path)
-                .then(data => {
-                    if (!mounted) {
-                        if (typeof data === 'number') {
-                            setValue(prevValue => ({
-                                ...prevValue,
-                                error: true
-                            }))
-                        } else {
-                            setValue({
-                                data,
-                                loading: false,
-                                error: false
-                            })
-                        }
+        SystemAPI.getData(path)
+            .then(data => {
+                if (!mounted) {
+                    if (typeof data === 'number') {
+                        setValue(prevValue => ({
+                            ...prevValue,
+                            error: true
+                        }))
+                    } else {
+                        setValue({
+                            data,
+                            loading: false,
+                            error: false
+                        })
                     }
-                })
-        } else {
-            setValue({
-                data: {},
-                loading: false,
-                error: false
+                }
             })
-        }
 
         return () => {
             mounted = true;
         }
     }, [path, id]);
 
-    const {error, loading, data} = value;
+    const { error, loading, data } = value;
 
     if (error) return <Error404 />
     if (loading && !error) return <Spinner />
 
     return (
-        <ContentViewer 
-            content={data}
-            playground={true}
-            fileName={`${id}DataExample.json`}
-        />
+        <>
+            <URI
+                uri={[{
+                    uri: window.location.href,
+                    title: 'URI'
+                }]}
+            />
+            <ContentViewer
+                content={data}
+                playground={true}
+                fileName={`${id}DataExample.json`}
+            />
+        </>
     )
 }
 

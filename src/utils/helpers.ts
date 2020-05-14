@@ -1,7 +1,6 @@
 import values from 'lodash/values';
 import has from 'lodash/has';
 import get from 'lodash/get';
-import sizeof from 'object-sizeof';
 
 type TextType = {
     '@language': 'en-us' | 'fi-fi',
@@ -13,12 +12,12 @@ export type DefaultPropertyType = {
     '@type': string,
     'http://www.w3.org/2000/01/rdf-schema#label'?: TextType[],
     'http://www.w3.org/2000/01/rdf-schema#comment'?: TextType[],
-    'http://www.w3.org/2000/01/rdf-schema#domain'?: Array<{'@id': string}>,
-    'http://www.w3.org/2000/01/rdf-schema#range'?: Array<{'@id': string}>,
-    'http://www.w3.org/2000/01/rdf-schema#subPropertyOf'?: Array<{'@id': string}>,
-    'https://standards.oftrust.net/v1/Vocabulary/nest': Array<{'@id': string}>,
-    'https://standards.oftrust.net/v1/Vocabulary/readonly': Array<{'@type': string, '@value': string}>,
-    'https://standards.oftrust.net/v1/Vocabulary/required': Array<{'@type': string, '@value': string}>
+    'http://www.w3.org/2000/01/rdf-schema#domain'?: Array<{ '@id': string }>,
+    'http://www.w3.org/2000/01/rdf-schema#range'?: Array<{ '@id': string }>,
+    'http://www.w3.org/2000/01/rdf-schema#subPropertyOf'?: Array<{ '@id': string }>,
+    'https://standards.oftrust.net/v2/Vocabulary/nest': Array<{ '@id': string }>,
+    'https://standards.oftrust.net/v2/Vocabulary/readonly': Array<{ '@type': string, '@value': string }>,
+    'https://standards.oftrust.net/v2/Vocabulary/required': Array<{ '@type': string, '@value': string }>
 
 }
 
@@ -35,8 +34,8 @@ export type PropertyItemType = {
     url: string,
     id: string,
     category?: string,
-    comment: [{comment: TextType[]}] | null,
-    label: [{label: TextType[]}] | null,
+    comment: [{ comment: TextType[] }] | null,
+    label: [{ label: TextType[] }] | null,
     range?: string,
     domain: Array<any>
 }
@@ -73,7 +72,7 @@ function extractTextData<T extends object>(element: T, key: string, lang: 'en-us
 }
 
 export function modifyClassElement(classElement: any) {
-    const splitter = 'v1/Vocabulary/';
+    const splitter = 'v2/Vocabulary/';
     const commentKey = 'http://www.w3.org/2000/01/rdf-schema#comment';
     const labelKey = 'http://www.w3.org/2000/01/rdf-schema#label';
     const parentKey = 'http://www.w3.org/2000/01/rdf-schema#subClassOf';
@@ -83,7 +82,7 @@ export function modifyClassElement(classElement: any) {
     const isContext: boolean = partialPath
         .split('/')
         .some((s: string) => {
-            return ['Identity', 'Link', 'DataProductContext'].includes(s)
+            return ['Identity', 'Link', 'DataProductContext', 'Annotation'].includes(s)
         });
     const parentBody = has(classElement, parentKey) ? get(classElement, parentKey).pop() : null;
     const parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
@@ -92,8 +91,8 @@ export function modifyClassElement(classElement: any) {
     const labelFi = extractTextData(classElement, labelKey, 'fi-fi');
     const commentEn = extractTextData(classElement, commentKey, 'en-us');
     const commentFi = extractTextData(classElement, commentKey, 'fi-fi');
-    
-    const url = isContext ? `/v1/Context/${partialPath}/` : `/v1/Vocabulary/${partialPath}`;
+
+    const url = isContext ? `/v2/Context/${partialPath}/` : `/v2/Vocabulary/${partialPath}`;
 
     return {
         id,
@@ -107,21 +106,21 @@ export function modifyClassElement(classElement: any) {
 }
 
 function extractData(schemaKey: string, vocabKey: string, item: any, pointer: PointersType, type: 'comment' | 'label') {
-    return has(item, schemaKey) ? [{[type]: get(item, schemaKey)}] :
-            has(item, vocabKey) ? get(item, vocabKey).map((element: {'@id': string}) => {
-                const pointerItem = get(pointer, get(element, '@id'));
+    return has(item, schemaKey) ? [{ [type]: get(item, schemaKey) }] :
+        has(item, vocabKey) ? get(item, vocabKey).map((element: { '@id': string }) => {
+            const pointerItem = get(pointer, get(element, '@id'));
 
-                return {
-                    [type]: pointerItem[type],
-                    domain: pointerItem.domain
-                }
-            }) : null
+            return {
+                [type]: pointerItem[type],
+                domain: pointerItem.domain
+            }
+        }) : null
 }
 
 export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
-    const splitter: string = 'v1/Vocabulary/';
-    const commentVocabKey: string = 'https://standards.oftrust.net/v1/Vocabulary/comment';
-    const labelVocabKey: string = 'https://standards.oftrust.net/v1/Vocabulary/label';
+    const splitter: string = 'v2/Vocabulary/';
+    const commentVocabKey: string = 'https://standards.oftrust.net/v2/Vocabulary/comment';
+    const labelVocabKey: string = 'https://standards.oftrust.net/v2/Vocabulary/label';
     const commentSchemaKey: keyof DefaultPropertyType = 'http://www.w3.org/2000/01/rdf-schema#comment';
     const labelSchemaKey: keyof DefaultPropertyType = 'http://www.w3.org/2000/01/rdf-schema#label';
     const domainKey: keyof DefaultPropertyType = 'http://www.w3.org/2000/01/rdf-schema#domain';
@@ -138,12 +137,12 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
         .pop() : '';
     const domain = has(item, domainKey) ? get(item, domainKey)?.map(domain => {
         const domainId = get(domain, '@id');
-        const isContext = domainId.includes('Identity') || domainId.includes('Link');
-        const partialPath = domainId.split('v1/Vocabulary/').pop() || '';
+        const isContext = domainId.includes('Identity') || domainId.includes('Link') || domainId.includes('Annotation');
+        const partialPath = domainId.split('v2/Vocabulary/').pop() || '';
 
         return {
             label: domainId.split('/').pop() || '',
-            url:  isContext ? `/v1/Context/${partialPath}/` : `/v1/Vocabulary/${partialPath}`
+            url: isContext ? `/v2/Context/${partialPath}/` : `/v2/Vocabulary/${partialPath}`
         }
     }) : [];
     const range: string = item[rangeKey] ? get(item[rangeKey], '[0].@id')
@@ -152,7 +151,7 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
         .pop() : null;
     return {
         id,
-        url: `/v1/Vocabulary/${url}`,
+        url: `/v2/Vocabulary/${url}`,
         label,
         comment,
         category: category === 'owl#topDataProperty' ? '' : category,
@@ -162,7 +161,7 @@ export function modifyProps(item: DefaultPropertyType, pointer: PointersType) {
 }
 
 export function modifyIdElement(item: any): IdElementType {
-    const domainKey = 'https://standards.oftrust.net/v1/Vocabulary/domain';
+    const domainKey = 'https://standards.oftrust.net/v2/Vocabulary/domain';
     const domain = has(item, domainKey) ? get(item, domainKey)
         .map((element: any) => {
             return get(element, '@id')
@@ -183,7 +182,7 @@ export function getRootNodes(data: { [key: string]: NodeType }) {
     return values(data).filter(node => node.root === true);
 }
 
-export function buildTree(list: Array<{[key: string]: string}>) {
+export function buildTree(list: Array<{ [key: string]: string }>) {
     return list.reduce((acc: any, current) => {
         const currentId: string = current.id;
         if (current.subClass) {
@@ -237,7 +236,7 @@ export function extractProperties(data: any): { [key: string]: PropertyTypes } {
         .filter(key => data[key]['@type'] === 'owl:DatatypeProperty')
         .reduce((acc, current) => {
             const prop = data[current];
-            const url: string = `/v1/Vocabulary/${get(prop, '@id').split('pot:').pop()}`;
+            const url: string = `/v2/Vocabulary/${get(prop, '@id').split('pot:').pop()}`;
             return {
                 ...acc,
                 [current]: {
@@ -292,28 +291,48 @@ export function extractTextForGrid<T extends object>(item: T, language: string, 
     return ''
 }
 
-export function pathNameToTabValue(path: string): string {
-    switch (path.toLowerCase()) {
-        case 'context':
-            return 'generalinformation';
-        case 'vocabulary':
-            return 'vocabulary';
-        case 'classdefinitions':
-            return 'classdefinitions';
-        case 'dataexample':
-            return 'dataexample';
-        case 'schema':
-            return 'jsonschema';
-        case 'parameterscontext':
-            return 'parameterscontext';
-        case 'parametersjsonschema':
-            return 'parametersjsonschema';
-        case 'outputcontext':
-            return 'outputcontext';
-        case 'dataexampleparameters':
-            return 'dataexampleparameters';
-        default :
-            return 'generalinformation'
+export function pathNameToTabValue(path: string, id: string): string {
+    if (
+        id.includes('DataProductContext')
+    ) {
+        switch (path.toLowerCase()) {
+            case 'context':
+                return 'generalinformation'
+            default:
+                return 'generalinformation'
+        }
+    }
+    if (
+        id.includes('DataProductOutput') ||
+        id.includes('DataProductParameters')
+    ) {
+        const params = id.includes('DataProductOutput') ? 'output' : 'parameters';
+        switch (path.toLowerCase()) {
+            case 'context':
+                return `${params}context`;
+            case 'schema':
+                return `${params}jsonschema`;
+            case 'dataexample':
+                return 'dataexampleparameters';
+            default:
+                return 'generalinformation';
+        }
+    } else {
+        switch (path.toLowerCase()) {
+            case 'context':
+                return 'generalinformation';
+            case 'vocabulary':
+                return 'vocabulary';
+            case 'classdefinitions':
+                return 'classdefinitions';
+            case 'dataexample':
+                return 'dataexample';
+            case 'schema':
+                return 'jsonschema';
+
+            default:
+                return 'generalinformation'
+        }
     }
 };
 
@@ -331,7 +350,13 @@ export function tabValueToPathName(tabValue: string): string {
             return 'Schema';
         case 'dataexample':
             return 'DataExample'
-        default :
+        case 'parametersjsonschema':
+            return 'Schema';
+        case 'outputjsonschema':
+            return 'Schema';
+        case 'dataexampleparameters':
+            return 'DataExample';
+        default:
             return 'Context'
     }
 }
@@ -341,7 +366,7 @@ export function setToLocalStorage(key: string, data: any) {
 }
 
 export function getLanguageFromStorage(): 'en' | 'fi' {
-    const value: string | null = localStorage.getItem('language') ;
+    const value: string | null = localStorage.getItem('language');
 
     if (!value) {
         return 'en';
@@ -350,25 +375,14 @@ export function getLanguageFromStorage(): 'en' | 'fi' {
     return JSON.parse(value);
 };
 
-export function getMainDataByContent<T extends object>(content: T): {content: T, size: string, sloc: number} {
-    const sloc = JSON
-        .stringify(content, undefined, 2)
-        .split('\n')
-        .length;
-    const size = (sizeof(content) / 1000).toFixed(2);
-
-    return {
-        content,
-        size,
-        sloc
-    }
-}
-
 export function getURIListById(path: string) {
-    const parametersContext = `${window.location.origin}/v1/Context/${path.replace('Context', 'Parameters')}/`;
-    const parametersSchema = `${window.location.origin}/v1/Schema/${path.replace('Context', 'Parameters')}`;
-    const outputContext = `${window.location.origin}/v1/Context/${path.replace('Context', 'Output')}/`;
-    const outputSchema = `${window.location.origin}/v1/Schema/${path.replace('Context', 'Output')}/`;
+    const parameters = path.replace('DataProductContext', 'DataProductParameters');
+    const output = path.replace('DataProductContext', 'DataProductOutput');
+
+    const parametersContext = `${window.location.origin}/v2/Context/${parameters}/`;
+    const parametersSchema = `${window.location.origin}/v2/Schema/${parameters}`;
+    const outputContext = `${window.location.origin}/v2/Context/${output}/`;
+    const outputSchema = `${window.location.origin}/v2/Schema/${output}`;
 
     return [
         {
@@ -388,4 +402,15 @@ export function getURIListById(path: string) {
             title: 'OutputSchema',
         }
     ]
+}
+
+export function getId(id: string) {
+    if (
+        id.includes('DataProductParameters') ||
+        id.includes('DataProductOutput')
+    ) {
+        return id.replace(/DataProductParameters|DataProductOutput/gi, 'DataProductContext')
+    }
+
+    return id;
 }

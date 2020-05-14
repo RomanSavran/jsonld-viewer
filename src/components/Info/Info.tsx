@@ -208,7 +208,7 @@ const Info: React.FC<InfoProps> = ({
                             superclasses
                                 .map((item, index, array) => {
                                     const to: string = array.slice(0, index + 1).join('/');
-                                    const mainPath = type === 'class' ? '/v1/Context/' : '/v1/Vocabulary/';
+                                    const mainPath = type === 'class' ? '/v2/Context/' : '/v2/Vocabulary/';
                                     const isContext: boolean = mainPath.split('/').includes('Context');
 
                                     return (

@@ -86,16 +86,16 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 	const classLink: string = location.pathname
 		.split('/')
 		.filter(s => {
-			return !['v1', 'classdefinitions', 'context', 'vocabulary', ''].includes(s.toLowerCase());
+			return !['v2', 'classdefinitions', 'context', 'vocabulary', ''].includes(s.toLowerCase());
 		})
 		.join('/');
 
-	const uri: string = `https://standards-ontotest.oftrust.net/v1/Context/${classLink}/`;
+	const uri: string = `https://standards-ontotest.oftrust.net/v2/Context/${classLink}/`;
 
 	const isOnlyVocabulary: boolean = classLink
 		.split('/')
 		.some((s: string) => {
-			return ['UnitOfMeasure', 'Technical', 'PhysicalProperty'].includes(s);
+			return ['UnitOfMeasure', 'Technical', 'PhysicalProperty', 'Annotation'].includes(s);
 		}) || ['Identity', 'Link'].includes(id);
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {

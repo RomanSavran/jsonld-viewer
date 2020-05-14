@@ -54,7 +54,7 @@ export function App() {
 	useEffect(() => {
 		let mounted = false;
 
-		ServiceAPI.getData('/v1/')
+		ServiceAPI.getData('/v2/')
 			.then(data => {
 				if (!mounted) {
 					setValue({
@@ -86,7 +86,14 @@ export function App() {
 	const propertiesData: any = [];
 	const otherData: IdElementType[] = [];
 
-	const filteredList = ['AnnotationEntity', 'DataProductOutput', 'DataProductParameters', 'PhysicalProperty', 'Technical', 'UnitOfMeasure'];
+	const filteredList = [
+		'AnnotationEntity', 
+		'DataProductOutput', 
+		'DataProductParameters', 
+		'PhysicalProperty', 
+		'Technical', 
+		'UnitOfMeasure'
+	];
 
 	data.forEach((element: any) => {
 		if ('@type' in element) {
@@ -115,9 +122,9 @@ export function App() {
 				<div className={classes.container}>
 					<Switch>
 						<Route exact path="/">
-							<Redirect to="/v1/" />
+							<Redirect to="/v2/" />
 						</Route>
-						<Route path="/v1/" exact render={() => (
+						<Route path="/v2/" exact render={() => (
 							<ClassesHigherarchy
 								classesList={classesList}
 							/>
@@ -127,28 +134,29 @@ export function App() {
 								classesList={classesList}
 							/>
 						)} />
-						<Route path="/v1/Context/*" render={() => (
+						<Route path="/v2/Context/*" render={() => (
 							<ClassesDetails
 								classesList={classesList}
 								propData={propData}
 							/>
 						)} />
-						<Route path="/v1/Schema/*" render={() => (
+						<Route path="/v2/Schema/*" render={() => (
 							<ClassesDetails
 								classesList={classesList}
 								propData={propData}
 							/>
 						)} />
-						<Route path="/v1/DataExample/*" render={() => (
+						<Route path="/v2/DataExample/*" render={() => (
 							<ClassesDetails
 								classesList={classesList}
 								propData={propData}
 							/>
 						)} />
-						<Route path="/v1/Vocabulary/*" render={({ match }) => {
+						<Route path="/v2/Vocabulary/*" render={({ match }) => {
 							const isClass = match.url.split('/')
 								.some((s: string) => {
 									return s === 'Identity' ||
+										s === 'Annotation' ||
 										s === 'Link' ||
 										s === 'PhysicalProperty' ||
 										s === 'Technical' ||
@@ -161,7 +169,7 @@ export function App() {
 									<PropertyDetails classesList={classesList} propData={propData} />
 								)
 						}} />
-						<Route path="/v1/ClassDefinitions/*" render={() => (
+						<Route path="/v2/ClassDefinitions/*" render={() => (
 							<ClassesDetails
 								propData={propData}
 								classesList={classesList}

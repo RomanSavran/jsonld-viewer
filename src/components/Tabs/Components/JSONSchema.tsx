@@ -12,9 +12,6 @@ import {
     createStyles,
     Theme
 } from '@material-ui/core';
-import DataContext from '../../../assets/custom-classes/DataContext/JSONSchema.json';
-import SensorDataProductContext from '../../../assets/custom-classes/DataContext/SensorDataProductContext/JSONSchema.json';
-import LtifDataProductContext from '../../../assets/custom-classes/DataContext/LtifDataProductContext/JSONSchema.json';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -79,34 +76,23 @@ const JSONSchema: React.FC = () => {
     useEffect(() => {
         let mounted = false;
 
-        if (!['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id)) {
-            SystemAPI.getData(`/v1/Schema${mainPath}`)
-                .then(data => {
-                    if (!mounted) {
-                        if (typeof data === 'number') {
-                            setValue(prevValue => ({
-                                ...prevValue,
-                                error: true
-                            }))
-                        } else {
-                            setValue({
-                                data,
-                                loading: false,
-                                error: false
-                            })
-                        }
+        SystemAPI.getData(`/v2/Schema${mainPath}`)
+            .then(data => {
+                if (!mounted) {
+                    if (typeof data === 'number') {
+                        setValue(prevValue => ({
+                            ...prevValue,
+                            error: true
+                        }))
+                    } else {
+                        setValue({
+                            data,
+                            loading: false,
+                            error: false
+                        })
                     }
-                })
-        } else {
-            const data = id === 'DataProductContext' ? DataContext :
-                id === 'SensorDataProductContext' ? SensorDataProductContext :
-                    id === 'LtifDataProductContext' ? LtifDataProductContext : {};
-            setValue({
-                data: data,
-                loading: false,
-                error: false
+                }
             })
-        }
 
         return () => {
             mounted = true;

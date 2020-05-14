@@ -16,7 +16,7 @@ const OutputContext: React.FC = () => {
   const path = location.pathname
     .split('/')
     .filter(s => (
-      !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
+      !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
     ))
     .map(s => {
       return s.replace('Context', 'Output')
@@ -32,7 +32,7 @@ const OutputContext: React.FC = () => {
 
     (async function () {
       try {
-        const data = await SystemAPI.getData(`/v1/Context/${path}/`);
+        const data = await SystemAPI.getData(`/v2/Context/${path}/`);
 
         if (!mounted) {
           if (typeof data === 'number') {
@@ -65,7 +65,7 @@ const OutputContext: React.FC = () => {
 
   const { loading, data, error } = value;
 
-  const uri = `${window.location.origin}/v1/Context/${path}`;
+  const uri = `${window.location.origin}/v2/Context/${path}/`;
 
   if (error) return <Error404 />
   if (loading && !error) return <Spinner />

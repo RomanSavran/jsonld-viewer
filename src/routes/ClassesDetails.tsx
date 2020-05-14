@@ -19,7 +19,8 @@ import {
   pathNameToTabValue,
   tabValueToPathName,
   extractTextForPropertyGrid,
-  getURIListById
+  getURIListById,
+  getId
 } from '../utils/helpers';
 import {
   GeneralInformation,
@@ -37,6 +38,20 @@ import {
 } from '../components/Tabs/Components';
 import { Error404 } from '../components/Errors';
 import { useTranslation } from 'react-i18next';
+
+function getDataProductPath(path: string, tabValue: string) {
+  const output = tabValue.includes('parameters') ? 'DataProductParameters' :
+    tabValue === 'generalinformation' ? 'DataProductContext' : 'DataProductOutput';
+  if (
+    path.includes('DataProductContext') ||
+    path.includes('DataProductParameters') ||
+    path.includes('DataProductOutput')
+  ) {
+    return path.replace(/DataProductContext|DataProductParameters|DataProductOutput/gi, output)
+  }
+
+  return path
+}
 
 const tabsConfig: Array<{ value: string, label: string }> = [
   { value: 'generalinformation', label: 'General Information' },
@@ -111,9 +126,9 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const ClassesDetails: React.FC<ClassesHigherarchyType> = ({ 
-  classesList, 
-  propData 
+const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
+  classesList,
+  propData
 }) => {
   const classes = useStyles();
   const theme: Theme = useTheme();
@@ -127,11 +142,11 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   const path: string = location.pathname
     .split('/')
     .filter(s => (
-      !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
+      !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
     ))
     .join('/');
-  const currentTab: string = location.pathname.split('/v1/').pop()?.split('/')[0] || '';
-  const id: string = path.split('/').pop() || '';
+  const currentTab: string = location.pathname.split('/v2/').pop()?.split('/')[0] || '';
+  const id: string = getId(path.split('/').pop() || '');
   const superclasses: string[] = useMemo(() => {
     return location.pathname
       .split(currentTab)
@@ -140,7 +155,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
       .split('/')
       .filter((s: string) => !!s && s !== id);
   }, [currentTab, id, location.pathname])
-  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab));
+  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
   const [filter, handleFilterChange] = useState('');
 
   const element: any = classesList.find(item => item.id === id);
@@ -148,9 +163,9 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   const isOnlyVocabulary: boolean = path
     .split('/')
     .some((s: string) => {
-      return ['UnitOfMeasure', 'Technical', 'PhysicalProperty'].includes(s);
-    }) || ['Identity', 'Link'].includes(id);
-  const isOnlyContext: boolean = ['DataProductContext', 'SensorDataProductContext', 'LtifDataProductContext'].includes(id);
+      return ['UnitOfMeasure', 'Technical', 'PhysicalProperty', 'Annotation'].includes(s);
+    }) || ['Identity', 'Link', 'Annotation'].includes(id);
+  const isOnlyContext: boolean = id.includes('DataProductContext');
   const language: string = i18n.language;
   const shouldTreeView: boolean = currentPath === 'classes-hierarchy';
 
@@ -168,27 +183,27 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
 
   const properties = useMemo(() => {
     return propData
-    .filter((property: any) => {
-      return property.domain.some((domain: any) => {
-        return domain.url === location.pathname
+      .filter((property: any) => {
+        return property.domain.some((domain: any) => {
+          return location.pathname.includes(domain.label)
+        })
       })
-    })
-    .map((item: any) => {
-      return {
-        ...item,
-        label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),
-        labelEn: extractTextForPropertyGrid(item, 'en', 'label', id),
-        labelFi: extractTextForPropertyGrid(item, 'fi', 'label', id),
-        commentEn: extractTextForPropertyGrid(item, 'en', 'comment', id),
-        commentFi: extractTextForPropertyGrid(item, 'fi', 'comment', id),
-        comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
-      }
-    })
+      .map((item: any) => {
+        return {
+          ...item,
+          label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),
+          labelEn: extractTextForPropertyGrid(item, 'en', 'label', id),
+          labelFi: extractTextForPropertyGrid(item, 'fi', 'label', id),
+          commentEn: extractTextForPropertyGrid(item, 'en', 'comment', id),
+          commentFi: extractTextForPropertyGrid(item, 'fi', 'comment', id),
+          comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
+        }
+      })
   }, [location.pathname, propData, language, id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setTabValue(pathNameToTabValue(currentTab));
+    setTabValue(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
     /* eslint-disable-next-line */
   }, [currentTab && id]);
 
@@ -209,16 +224,12 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   }
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
-    const newPath = `/v1/${tabValueToPathName(newValue)}/${path}`.concat(
+    const newPath = `/v2/${tabValueToPathName(newValue)}/${getDataProductPath(path, newValue)}`.concat(
       [
-        'context', 
+        'context',
         'generalinformation',
-        'dataexample', 
         'parameterscontext',
-        'parametersjsonschema',
         'outputcontext',
-        'outputjsonschema',
-        'dataexampleparameters'
       ].includes(newValue) ? '/' : ''
     );
     setTabValue(newValue);
@@ -226,8 +237,15 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   };
 
   const classesTree = useMemo(() => buildTree(classesList), [classesList]);
-  const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
-  
+  const rootNodes = useMemo(() => {
+    const root = getRootNodes(classesTree);
+
+    return [
+      ...root.slice(1),
+		  ...root.slice(0, 1)
+    ]
+  }, [classesTree]);
+
   if (!element) return <Error404 />
 
   const labelEn = element.labelEn || 'Has no label';
@@ -242,24 +260,24 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     superclasses
   } : null;
 
-  const uriList = isOnlyContext ? getURIListById(id) : null;
+  const uriList = isOnlyContext ? getURIListById(path) : null;
 
   const generalinfo = id.includes('DataProductContext') ? (
-    <GeneralInformationDataProduct 
+    <GeneralInformationDataProduct
       data={data}
       id={id}
       uriList={uriList}
     />
   ) : (
-    <GeneralInformation
-      data={data}
-      properties={properties}
-      id={id}
-      type="class"
-      shouldTreeView={shouldTreeView}
-      uriList={uriList}
-    />
-  );
+      <GeneralInformation
+        data={data}
+        properties={properties}
+        id={id}
+        type="class"
+        shouldTreeView={shouldTreeView}
+        uriList={uriList}
+      />
+    );
 
   return (
     <Grid

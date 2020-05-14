@@ -9,7 +9,7 @@ function createPathObject(path: string, status: boolean) {
     return path
         .split('/')
         .filter(s => (
-			!['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
+			!['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
 		))
 		.reduce((acc, current, index, array) => {
 			return {

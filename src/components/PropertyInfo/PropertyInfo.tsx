@@ -37,7 +37,7 @@ const PropertyInfo: React.FC<PropertyInfoProp> = (props) => {
         domain
     } = data;
     const propLink: string = [...superclasses, id].join('/');
-    const uri: string = `https://standards-ontotest.oftrust.net/v1/Vocabulary/${propLink}`;
+    const uri: string = `https://standards-ontotest.oftrust.net/v2/Vocabulary/${propLink}`;
     const currentClasses: Array<{[key: string]: string}> = classesList.filter(cls => {
         return domain.some((domainItem: {url: string, label: string}) => {
             return domainItem.label === cls.id

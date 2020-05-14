@@ -16,7 +16,7 @@ const ParametersSchema: React.FC = () => {
   const path = location.pathname
     .split('/')
     .filter(s => (
-      !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
+      !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
     ))
     .map(s => {
       return s.replace('Context', 'Parameters')
@@ -32,9 +32,7 @@ const ParametersSchema: React.FC = () => {
 
     (async function () {
       try {
-        const data = await SystemAPI.getData(`/v1/Schema/${path}`);
-
-        console.log(data);
+        const data = await SystemAPI.getData(`/v2/Schema/${path}`);
 
         if (!mounted) {
           if (typeof data === 'number') {
@@ -67,7 +65,7 @@ const ParametersSchema: React.FC = () => {
 
   const { loading, data, error } = value;
 
-  const uri = `${window.location.origin}/v1/Schema/${path}`;
+  const uri = `${window.location.origin}/v2/Schema/${path}`;
 
   if (error) return <Error404 />
   if (loading && !error) return <Spinner />

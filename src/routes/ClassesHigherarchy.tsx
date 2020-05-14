@@ -42,6 +42,11 @@ const ClassesHigherarchy: React.FC<ClassesHigherarchyType> = ({ classesList }) =
 	const classesTree = useMemo(() => buildTree(classesList), [classesList]);
 	const rootNodes = useMemo(() => getRootNodes(classesTree), [classesTree]);
 
+	const manualSortRootNodes = [
+		...rootNodes.slice(1),
+		...rootNodes.slice(0, 1)
+	];
+
 	return (
 		<>
 			<TextField
@@ -55,7 +60,7 @@ const ClassesHigherarchy: React.FC<ClassesHigherarchyType> = ({ classesList }) =
 			/>
 			<Tree
 				filter={filter.toLowerCase()}
-				rootNodes={rootNodes}
+				rootNodes={manualSortRootNodes}
 				tree={classesTree}
 			/>
 		</>

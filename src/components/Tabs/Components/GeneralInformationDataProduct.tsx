@@ -85,9 +85,6 @@ const GeneralInformationDataProduct: React.FC<GeneralInformationDataProductTypes
 	const { t } = useTranslation();	
 	if (!data) return <Error404 />
 
-    const comment = id === 'LtifDataProductContext' ? t('LTIFR refers to Lost Time Injury Frequency Rate, the number of lost time injuries occurring in a workplace per 1 million hours worked.') : data.comment;
-	
-
 	return (
         <div>
             <h2 className={classes.h2}>{id}</h2>
@@ -97,7 +94,7 @@ const GeneralInformationDataProduct: React.FC<GeneralInformationDataProductTypes
                 </div>
                 <div className={classes.descriptionItem}>
                     <h4 className={classes.itemTitle}>{t("Description")}</h4>
-                    <p className={classes.text}>{comment}</p>
+                    <p className={classes.text}>{data.comment}</p>
                 </div>
             </div>
             

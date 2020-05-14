@@ -7,12 +7,13 @@ import ContentViewer from '../../ContentViewer';
 import SystemAPI from '../../../services/api';
 import Spinner from '../../Spinner'
 import { Error404 } from '../../Errors';
+import URI from '../../URI';
 
 function getPath(pathname: string, view: 'Parameters' | 'Output') {
     return pathname
         .split('/')
         .filter(s => (
-            !['', 'v1', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
+            !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
         ))
         .map(s => {
             return s.replace('Context', view)
@@ -31,8 +32,8 @@ const DataExampleParameters: React.FC = () => {
         error: false
     })
     const location = useLocation();
-    const parametersPath = getPath(location.pathname, 'Parameters');
-    const outputPath = getPath(location.pathname, 'Output');
+    const parametersPath = location.pathname.replace(/DataProductParameters|DataProductOutput/gi, 'DataProductParameters');
+    const outputPath = location.pathname.replace(/DataProductParameters|DataProductOutput/gi, 'DataProductOutput');
     const id = location.pathname
         .split('/')
         .filter(s => !!s)
@@ -43,8 +44,8 @@ const DataExampleParameters: React.FC = () => {
 
         (async function () {
             try {
-                const parameters = await SystemAPI.getData(`/v1/DataExample/${parametersPath}`);
-                const output = await SystemAPI.getData(`/v1/DataExample/${outputPath}`);
+                const parameters = await SystemAPI.getData(parametersPath);
+                const output = await SystemAPI.getData(outputPath);
 
                 if (!mounted) {
                     if (typeof parameters === 'number' || typeof output === 'number') {
@@ -109,6 +110,17 @@ const DataExampleParameters: React.FC = () => {
         }
     }
 
+    const uriList = [
+        {
+            uri: `${window.location.origin}${parametersPath}`,
+            title: 'URI Parameters Example'
+        },
+        {
+            uri: `${window.location.origin}${outputPath}`,
+            title: 'URI Output Example'
+        }
+    ]
+
     const { data, loading, error } = value;
 
     if (error) return <Error404 />
@@ -119,6 +131,14 @@ const DataExampleParameters: React.FC = () => {
             container
             spacing={3}
         >
+            <Grid
+                item
+                xs={12}
+            >
+                <URI 
+                    uri={uriList}
+                />
+            </Grid>
             <Grid
                 item
                 sm={6}
