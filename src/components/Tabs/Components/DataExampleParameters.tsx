@@ -9,18 +9,6 @@ import Spinner from '../../Spinner'
 import { Error404 } from '../../Errors';
 import URI from '../../URI';
 
-function getPath(pathname: string, view: 'Parameters' | 'Output') {
-    return pathname
-        .split('/')
-        .filter(s => (
-            !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
-        ))
-        .map(s => {
-            return s.replace('Context', view)
-        })
-        .join('/')
-}
-
 const DataExampleParameters: React.FC = () => {
     const [value, setValue] = useState<{
         data: null | {parameters: any, output: any},

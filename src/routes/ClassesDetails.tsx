@@ -20,7 +20,6 @@ import {
   tabValueToPathName,
   extractTextForPropertyGrid,
   getURIListById,
-  getId
 } from '../utils/helpers';
 import {
   GeneralInformation,
@@ -38,6 +37,14 @@ import {
 } from '../components/Tabs/Components';
 import { Error404 } from '../components/Errors';
 import { useTranslation } from 'react-i18next';
+import P from '../utils/platform-helper';
+import {
+  classesDetailsPath,
+  vocabularyClassList,
+  vocabularyTabsList,
+  dataProductTabsList,
+  vocabularyIdList
+} from '../utils/lists';
 
 function getDataProductPath(path: string, tabValue: string) {
   const output = tabValue.includes('parameters') ? 'DataProductParameters' :
@@ -134,58 +141,40 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   const theme: Theme = useTheme();
   const { t, i18n } = useTranslation();
   const { currentPath } = useContext(RoutesContext);
-  const location = useLocation();
+  const {pathname} = useLocation();
   const history = useHistory();
   const isDesktop: boolean = !useMediaQuery(theme.breakpoints.down('md'));
   const lgAndMdView = useMediaQuery(theme.breakpoints.between('md', 'lg'));
-  const [hasError, setHasError] = useState(false);
-  const path: string = location.pathname
-    .split('/')
-    .filter(s => (
-      !['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema', 'dataexample'].includes(s.toLowerCase())
-    ))
-    .join('/');
-  const currentTab: string = location.pathname.split('/v2/').pop()?.split('/')[0] || '';
-  const id: string = getId(path.split('/').pop() || '');
-  const superclasses: string[] = useMemo(() => {
-    return location.pathname
-      .split(currentTab)
-      .filter((s: string) => !!s)
-      .pop()!
-      .split('/')
-      .filter((s: string) => !!s && s !== id);
-  }, [currentTab, id, location.pathname])
-  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
   const [filter, handleFilterChange] = useState('');
+  const [hasError, setHasError] = useState(false);
+
+  const path = P.getPath(pathname, classesDetailsPath)
+  const currentTab = P.getTab(pathname);
+  const id: string = P.getId(pathname);
+  const superclasses = useMemo(() => {
+    return P.getParentsClasses(
+      pathname,
+      currentTab,
+      id
+    )
+  }, [currentTab, id, pathname])
+  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
 
   const element: any = classesList.find(item => item.id === id);
-
-  const isOnlyVocabulary: boolean = path
-    .split('/')
-    .some((s: string) => {
-      return ['UnitOfMeasure', 'Technical', 'PhysicalProperty', 'Annotation'].includes(s);
-    }) || ['Identity', 'Link', 'Annotation'].includes(id);
+  const isOnlyVocabulary = P.checkIsVocabulary(path, vocabularyClassList, vocabularyIdList, id);
   const isOnlyContext: boolean = id.includes('DataProductContext');
   const language: string = i18n.language;
   const shouldTreeView: boolean = currentPath === 'classes-hierarchy';
 
-  const filteredTabsConfig: Array<{ value: string, label: string }> = isOnlyVocabulary && !isOnlyContext ? [
-    { value: 'generalinformation', label: 'General Information' },
-    { value: 'vocabulary', label: 'Vocabulary' }
-  ] : isOnlyContext && !isOnlyVocabulary ? [
-    { value: 'generalinformation', label: 'General Information' },
-    { value: 'parameterscontext', label: 'Parameters Context' },
-    { value: 'parametersjsonschema', label: 'Parameters JSON Schema' },
-    { value: 'outputcontext', label: 'Output Context' },
-    { value: 'outputjsonschema', label: 'Output JSON Schema' },
-    { value: 'dataexampleparameters', label: 'Data Example' }
-  ] : tabsConfig;
+  const filteredTabsConfig: Array<{ value: string, label: string }> = isOnlyVocabulary && !isOnlyContext ?  
+    vocabularyTabsList : 
+    isOnlyContext && !isOnlyVocabulary ? dataProductTabsList : tabsConfig;
 
   const properties = useMemo(() => {
     return propData
       .filter((property: any) => {
         return property.domain.some((domain: any) => {
-          return location.pathname.includes(domain.label)
+          return pathname.includes(domain.label)
         })
       })
       .map((item: any) => {
@@ -199,7 +188,11 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
           comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
         }
       })
-  }, [location.pathname, propData, language, id]);
+  }, [pathname, propData, language, id]);
+
+  useEffect(() => {
+    setTabValue(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
+  }, [path, currentTab]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -210,7 +203,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   useEffect(() => {
     setHasError(false);
     if (
-      location.pathname[location.pathname.length - 1] !== '/' &&
+      pathname[pathname.length - 1] !== '/' &&
       ['Context', 'General Information'].includes(currentTab)
     ) {
       setHasError(true);
@@ -345,10 +338,10 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
                 {tabValue === 'parametersjsonschema' && <ParametersSchema />}
                 {tabValue === 'outputcontext' && <OutputContext />}
                 {tabValue === 'outputjsonschema' && <OutputSchema />}
-                {tabValue === 'vocabulary' && <Vocabulary path={location.pathname} />}
-                {tabValue === 'classdefinitions' && <ClassDefinition path={location.pathname} />}
+                {tabValue === 'vocabulary' && <Vocabulary path={pathname} />}
+                {tabValue === 'classdefinitions' && <ClassDefinition path={pathname} />}
                 {tabValue === 'jsonschema' && <JSONSchema />}
-                {tabValue === 'dataexample' && <DataExample path={location.pathname} />}
+                {tabValue === 'dataexample' && <DataExample path={pathname} />}
                 {tabValue === 'dataexampleparameters' && <DataExampleParameters />}
               </div>
             </>

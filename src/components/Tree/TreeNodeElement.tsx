@@ -8,6 +8,7 @@ import TreeNode from './TreeNode';
 import { Expand, MinusSquare, PlusSquare } from '../Icons';
 import {RoutesContext} from '../../context/RoutesContext';
 import clsx from 'clsx';
+import P from '../../utils/platform-helper';
 
 const useStyles = makeStyles((theme: Theme) => ({
   li: {
@@ -95,10 +96,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
     handleChangeTreeState(nodePath, status)
   }
 
-  const id: string = node.path
-    .split('/')
-    .filter((s: string) => !!s)
-    .pop() || '';
+  const id: string = P.getId(node.path)
 
   const isExpand = id in treeState ? treeState[id] : false;
 
@@ -112,8 +110,10 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
         <div className={classes.strokeWrapper} onClick={changeExpandStatus(node.path, !isExpand)}>
           <NavLink
             to={node.path}
-            exact
             className={classes.link}
+            isActive={(match, location) => {
+              return P.getId(location.pathname) === id;
+            }}
           >
             {id}
           </NavLink>

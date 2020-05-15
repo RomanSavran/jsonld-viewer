@@ -329,7 +329,6 @@ export function pathNameToTabValue(path: string, id: string): string {
                 return 'dataexample';
             case 'schema':
                 return 'jsonschema';
-
             default:
                 return 'generalinformation'
         }
@@ -376,8 +375,8 @@ export function getLanguageFromStorage(): 'en' | 'fi' {
 };
 
 export function getURIListById(path: string) {
-    const parameters = path.replace('DataProductContext', 'DataProductParameters');
-    const output = path.replace('DataProductContext', 'DataProductOutput');
+    const parameters = path.replace(/DataProductContext/gi, 'DataProductParameters');
+    const output = path.replace(/DataProductContext/gi, 'DataProductOutput');
 
     const parametersContext = `${window.location.origin}/v2/Context/${parameters}/`;
     const parametersSchema = `${window.location.origin}/v2/Schema/${parameters}`;
@@ -404,13 +403,10 @@ export function getURIListById(path: string) {
     ]
 }
 
-export function getId(id: string) {
-    if (
-        id.includes('DataProductParameters') ||
-        id.includes('DataProductOutput')
-    ) {
-        return id.replace(/DataProductParameters|DataProductOutput/gi, 'DataProductContext')
+export function getType(type: Array<string>) {
+    if (Array.isArray(type) && type.length > 0) {
+        return type[0]
+    } else {
+        throw new Error('Invalid type')
     }
-
-    return id;
 }

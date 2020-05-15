@@ -25,12 +25,14 @@ import {
 	modifyProps,
 	IdElementType,
 	PointersType,
-	modifyClassElement
+	modifyClassElement,
 } from './utils/helpers';
 import TopBar from './components/TopBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { Error404 } from './components/Errors';
 import keyBy from 'lodash/keyBy';
+import P from './utils/platform-helper';
+import {filterClassList} from './utils/lists';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -42,6 +44,8 @@ const useStyles = makeStyles((theme: Theme) =>
 		}
 	})
 );
+
+
 
 export function App() {
 	const classes = useStyles();
@@ -65,13 +69,11 @@ export function App() {
 				}
 			})
 			.catch(err => {
-				if (!mounted) {
-					setValue({
-						data: [],
-						loading: false,
-						hasError: true
-					})
-				}
+				setValue({
+					data: [],
+					loading: false,
+					hasError: true
+				})
 			})
 
 		return () => {
@@ -85,25 +87,19 @@ export function App() {
 	const classesList: Array<{ [key: string]: string }> = [];
 	const propertiesData: any = [];
 	const otherData: IdElementType[] = [];
-
-	const filteredList = [
-		'AnnotationEntity', 
-		'DataProductOutput', 
-		'DataProductParameters', 
-		'PhysicalProperty', 
-		'Technical', 
-		'UnitOfMeasure'
-	];
+	const list: Array<any> = [];
 
 	data.forEach((element: any) => {
 		if ('@type' in element) {
-			const type: string = element['@type'][0];
-			if (type.includes('owl#Class')) {
-				const isValidClass = !filteredList.some(entity => element['@id'].includes(entity));
-				if (isValidClass) {
+			const type = P.getType(element['@type']);
+			if (P.isClass(type)) {
+				if (
+					P.isVisibleClass(filterClassList, element['@id'])
+				) {
+					list.push(element);
 					classesList.push(modifyClassElement(element));
 				}
-			} else if (type.includes('owl#DatatypeProperty')) {
+			} else if (P.isProperty(type)) {
 				propertiesData.push(element)
 			}
 		} else {
@@ -112,7 +108,7 @@ export function App() {
 	});
 
 	const modifiedOtherData: PointersType = keyBy(otherData, 'id');
-	const propData: Array<{[key: string]: any}> = propertiesData.map((item: any) => modifyProps(item, modifiedOtherData));
+	const propData: Array<{ [key: string]: any }> = propertiesData.map((item: any) => modifyProps(item, modifiedOtherData));
 
 	return (
 		<Router>
@@ -129,7 +125,7 @@ export function App() {
 								classesList={classesList}
 							/>
 						)} />
-						<Route path="/classes-grid" exact render={() => (
+						<Route path="/v2/classes-grid" exact render={() => (
 							<ClassesGrid
 								classesList={classesList}
 							/>
@@ -163,11 +159,8 @@ export function App() {
 										s === 'UnitOfMeasure' ||
 										s === 'DataProductContext';
 								})
-							return isClass ? (
-								<ClassesDetails classesList={classesList} propData={propData} />
-							) : (
-									<PropertyDetails classesList={classesList} propData={propData} />
-								)
+							return isClass ? <ClassesDetails classesList={classesList} propData={propData} /> :
+								<PropertyDetails classesList={classesList} propData={propData} />
 						}} />
 						<Route path="/v2/ClassDefinitions/*" render={() => (
 							<ClassesDetails
@@ -175,13 +168,13 @@ export function App() {
 								classesList={classesList}
 							/>
 						)} />
-						<Route path="/properties-grid" exact render={() => (
+						<Route path="/v2/properties-grid" exact render={() => (
 							<PropertiesGrid
 								propertiesData={propData}
 							/>
 						)} />
-						<Route path="/404" exact component={Error404} />
-						<Redirect to="/404" />
+						<Route path="/v2/404" exact component={Error404} />
+						<Redirect to="/v2/404" />
 					</Switch>
 				</div>
 			</RoutesContextProvider>
