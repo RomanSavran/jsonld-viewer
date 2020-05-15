@@ -29,7 +29,6 @@ const TreeNode: React.FC<TreeNodeType> = ({
 	tree
 }) => {
 	const classes = useStyles();
-
 	return (
 		<ul
 			className={clsx(classes.ul, {

@@ -185,45 +185,44 @@ export function getRootNodes(data: { [key: string]: NodeType }) {
 export function buildTree(list: Array<{ [key: string]: string }>) {
     return list.reduce((acc: any, current) => {
         const currentId: string = current.id;
-        if (current.subClass) {
-            let parents: string[] = current.subClass.split(', ');
-
-            return parents.reduce((r: any, c: string) => {
-                return c in r ? {
-                    ...r,
-                    [c]: {
-                        ...r[c],
+        const subClass = current.subClass;
+        if (!subClass) {
+            return {
+                ...acc,
+                [currentId]: {
+                    root: true,
+                    children: [],
+                    path: current.url
+                }
+            }
+        } else {
+            if (subClass in acc) {
+                return currentId in acc ? {
+                    ...acc,
+                    [subClass]: {
+                        ...acc[subClass],
                         children: [
-                            ...r[c].children,
+                            ...acc[subClass].children,
+                            currentId
+                        ]
+                    }
+                } : {
+                    ...acc,
+                    [subClass]: {
+                        ...acc[subClass],
+                        children: [
+                            ...acc[subClass].children,
                             currentId
                         ]
                     },
-                    [currentId]: currentId in r ? r[currentId] : { path: current.url, children: [] }
-                } : {
-                        ...r,
-                        [c]: {
-                            path: c,
-                            children: [currentId]
-                        },
-                        [currentId]: currentId in r ? r[currentId] : { path: current.url, children: [] }
+                    [currentId]: {
+                        path: current.url,
+                        children: []
                     }
-            }, acc)
-        }
-
-        return currentId in acc ? {
-            ...acc,
-            [currentId]: {
-                ...acc[currentId],
-                root: true
-            }
-        } : {
-                ...acc,
-                [currentId]: {
-                    path: current.url,
-                    children: [],
-                    root: true
                 }
             }
+        }
+        return acc;
     }, {});
 }
 

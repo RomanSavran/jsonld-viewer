@@ -87,7 +87,6 @@ export function App() {
 	const classesList: Array<{ [key: string]: string }> = [];
 	const propertiesData: any = [];
 	const otherData: IdElementType[] = [];
-	const list: Array<any> = [];
 
 	data.forEach((element: any) => {
 		if ('@type' in element) {
@@ -96,7 +95,6 @@ export function App() {
 				if (
 					P.isVisibleClass(filterClassList, element['@id'])
 				) {
-					list.push(element);
 					classesList.push(modifyClassElement(element));
 				}
 			} else if (P.isProperty(type)) {
