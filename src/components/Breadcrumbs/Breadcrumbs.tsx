@@ -79,7 +79,7 @@ const Breadcrumbs: React.FC = () => {
                         return idx > pathIndex ? acc : acc + '/' + current;
                     }, '');
                 let to = path === 'classes-hierarchy' ? `/v2/` : 
-                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/${path}` : 
+                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/v2/${path}` : 
                         (
                             location.pathname.includes('Vocabulary') ||
                             location.pathname.includes('DataExample') ||
