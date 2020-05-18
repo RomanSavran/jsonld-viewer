@@ -178,6 +178,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
         })
       })
       .map((item: any) => {
+        console.log(item);
         return {
           ...item,
           label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),

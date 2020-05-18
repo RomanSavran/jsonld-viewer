@@ -256,9 +256,7 @@ export function extractTextForPropertyGrid(item: any, lang: string, type: 'label
     const emptyText = type === 'label' ? emptyLabelText : emptyCommentText;
 
     if (item[type]) {
-        let [res] = item[type].filter((textObj: any) => {
-            return 'domain' in textObj && Array.isArray(textObj.domain) ? textObj.domain.includes(id) : false
-        });
+        let [res] = item[type];
 
         if (res) {
             const resText = res[type] ? res[type].find((textObj: any) => get(textObj, '@language') === language) : null;
