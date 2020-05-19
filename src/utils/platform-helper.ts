@@ -73,6 +73,7 @@ class PlatformHelper {
                 return vocabularyList.includes(s)
             })
     }
+    
 }
 
 export default new PlatformHelper();

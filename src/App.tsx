@@ -11,7 +11,8 @@ import {
 	ClassesGrid,
 	ClassesDetails,
 	PropertiesGrid,
-	PropertyDetails
+	PropertyDetails,
+	DataExplainer
 } from './routes';
 import {
 	makeStyles,
@@ -128,19 +129,18 @@ export function App() {
 								classesList={classesList}
 							/>
 						)} />
-						<Route path="/v2/Context/*" render={() => (
-							<ClassesDetails
+						<Route path="/v2/properties-grid" exact render={() => (
+							<PropertiesGrid
+								propertiesData={propData}
+							/>
+						)} />
+						<Route path="/v2/data-explainer" exact component={() => (
+							<DataExplainer 
 								classesList={classesList}
 								propData={propData}
 							/>
-						)} />
-						<Route path="/v2/Schema/*" render={() => (
-							<ClassesDetails
-								classesList={classesList}
-								propData={propData}
-							/>
-						)} />
-						<Route path="/v2/DataExample/*" render={() => (
+						)}/>
+						<Route path="/v2/*" render={() => (
 							<ClassesDetails
 								classesList={classesList}
 								propData={propData}
@@ -149,28 +149,19 @@ export function App() {
 						<Route path="/v2/Vocabulary/*" render={({ match }) => {
 							const isClass = match.url.split('/')
 								.some((s: string) => {
-									return s === 'Identity' ||
-										s === 'Annotation' ||
-										s === 'Link' ||
-										s === 'PhysicalProperty' ||
-										s === 'Technical' ||
-										s === 'UnitOfMeasure' ||
-										s === 'DataProductContext';
+									return [
+										'Identity',
+										'Annotation',
+										'Link',
+										'PhysicalProperty',
+										'Technical',
+										'UnitOfMeasure',
+										'DataProductContext'
+									].includes(s);
 								})
 							return isClass ? <ClassesDetails classesList={classesList} propData={propData} /> :
 								<PropertyDetails classesList={classesList} propData={propData} />
 						}} />
-						<Route path="/v2/ClassDefinitions/*" render={() => (
-							<ClassesDetails
-								propData={propData}
-								classesList={classesList}
-							/>
-						)} />
-						<Route path="/v2/properties-grid" exact render={() => (
-							<PropertiesGrid
-								propertiesData={propData}
-							/>
-						)} />
 						<Route path="/v2/404" exact component={Error404} />
 						<Redirect to="/v2/404" />
 					</Switch>

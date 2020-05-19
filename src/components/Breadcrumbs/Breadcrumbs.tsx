@@ -56,7 +56,8 @@ const Breadcrumbs: React.FC = () => {
                 'classes-grid', 
                 'properties-grid',
                 'schema',
-                'dataexample'
+                'dataexample',
+                'data-explainer'
             ].includes(path.toLowerCase());
         });
     const gluedPath = location.pathname
@@ -79,7 +80,7 @@ const Breadcrumbs: React.FC = () => {
                         return idx > pathIndex ? acc : acc + '/' + current;
                     }, '');
                 let to = path === 'classes-hierarchy' ? `/v2/` : 
-                    ['classes-hierarchy', 'classes-grid', 'properties-grid'].includes(path) ? `/v2/${path}` : 
+                    ['classes-hierarchy', 'classes-grid', 'properties-grid', 'data-explainer'].includes(path) ? `/v2/${path}` : 
                         (
                             location.pathname.includes('Vocabulary') ||
                             location.pathname.includes('DataExample') ||

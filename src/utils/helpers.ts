@@ -407,3 +407,11 @@ export function getType(type: Array<string>) {
         throw new Error('Invalid type')
     }
 }
+
+export function modifySchemaValidateError(error: any) {
+    if (error.keyword === 'enum') {
+        return `${error.dataPath} ${error.message}: ${error.params.allowedValues.join(', ')}`;
+    }
+
+    return error.message;
+}

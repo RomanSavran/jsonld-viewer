@@ -14,6 +14,42 @@ class GithubAPI {
 
         return await res.json();
     }
+
+    getContextByLink = async (url: string) => {
+        try {
+            const res = await fetch(url, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+    
+            if (!res.ok) {
+                return res.status
+            }
+    
+            return await res.json();
+        } catch (err) {
+            return 'error';
+        }
+        
+    }
+
+    getEntityByURL = async (url: string) => {
+        try {
+            const res = await fetch(url, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+    
+            if (!res.ok) {
+                return res.status
+            }
+    
+            return await res.json();
+        } catch (err) {
+            return 'error';
+        }
+        
+    }
 }
 
 export default new GithubAPI();

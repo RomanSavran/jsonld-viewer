@@ -28,11 +28,10 @@ const RoutesContextProvider: React.FC<RoutesContextProps> = ({
         'classes-hierarchy'
     );
 
-    const location = useLocation();
-
-    const pathObject = createPathObject(location.pathname, false)
-        
-    const [treeState, setTreeState] = useState(pathObject);
+    const {pathname} = useLocation();        
+    const [treeState, setTreeState] = useState(
+        createPathObject(pathname, false)
+    );
 
     const handleChangeCurrentPath = (path: 'classes-hierarchy' | 'classes-grid' | 'properties-grid') => {
         setCurrentPath(path)

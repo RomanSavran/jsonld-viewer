@@ -107,7 +107,8 @@ type Link = {
 const links: Link[] = [
     { label: 'Classes Hierarchy', to: '/v2/' },
     { label: 'Classes Grid', to: '/v2/classes-grid' },
-    { label: 'Properties Grid', to: '/v2/properties-grid' }
+    { label: 'Properties Grid', to: '/v2/properties-grid' },
+    { label: 'Data Explainer', to: '/v2/data-explainer' }
 ]
 
 const TopBar: React.FC = () => {
