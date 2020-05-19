@@ -162,9 +162,9 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
 
   const element: any = classesList.find(item => item.id === id);
   const isOnlyVocabulary = P.checkIsVocabulary(path, vocabularyClassList, vocabularyIdList, id);
-  const isOnlyContext: boolean = id.includes('DataProductContext');
-  const language: string = i18n.language;
-  const shouldTreeView: boolean = currentPath === 'classes-hierarchy';
+  const isOnlyContext = id.includes('DataProductContext');
+  const language = i18n.language;
+  const shouldTreeView = currentPath === 'classes-hierarchy';
 
   const filteredTabsConfig: Array<{ value: string, label: string }> = isOnlyVocabulary && !isOnlyContext ?  
     vocabularyTabsList : 
