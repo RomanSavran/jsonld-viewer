@@ -383,7 +383,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
           onClick={handleClick}
           disabled={!value}
         >
-          {t('Explaine')}
+          {t('Explain')}
         </Button>
       </div>
       {
