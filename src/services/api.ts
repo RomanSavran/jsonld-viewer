@@ -36,7 +36,7 @@ class GithubAPI {
         
     }
 
-    getEntityByURL = async (url: string) => {
+    getContextByURL = async (url: string) => {
         try {
             const res = await fetch(url, {
                 method: 'GET',
@@ -50,13 +50,39 @@ class GithubAPI {
                     message: 'Invalid context'
                 }
             }
-    
+
             return await res.json();
         } catch (err) {
-            console.error('Invalid context')
+            console.error('Invalid context url')
             return {
                 type: 'error',
-                message: 'Invalid context'
+                message: 'Invalid context url'
+            };
+        }
+        
+    }
+
+    getSchemaByURL = async (url: string) => {
+        try {
+            const res = await fetch(url, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+    
+            if (!res.ok) {
+                console.error('Invalid schema url')
+                return {
+                    type: 'error',
+                    message: 'Invalid schema url'
+                }
+            }
+
+            return await res.json();
+        } catch (err) {
+            console.error('Invalid schema url')
+            return {
+                type: 'error',
+                message: 'Invalid schema url'
             };
         }
         

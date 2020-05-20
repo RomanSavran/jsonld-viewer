@@ -164,15 +164,8 @@ function isContextExist(data: any) {
 }
 
 async function getContextFile(url: string) {
-  try {
-    const contextData = await SystemAPI.getEntityByURL(url);
+    const contextData = await SystemAPI.getContextByURL(url);
     return contextData;
-  } catch {
-    return {
-      type: 'error',
-      message: 'Couldn\'t get Context file from server'
-    }
-  }
 }
 
 function isSchemaExist(data: any) {
@@ -183,16 +176,9 @@ function isSchemaExist(data: any) {
 }
 
 async function getSchemaFile(url: string) {
-  try {
-    const schema = await SystemAPI.getEntityByURL(url);
+    const schema = await SystemAPI.getSchemaByURL(url);
 
     return schema;
-  } catch {
-    return {
-      type: 'error',
-      message: 'Couldn\'t get Schema from server'
-    }
-  }
 }
 
 function schemaValidate(schema: any, data: any) {
