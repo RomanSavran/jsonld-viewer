@@ -90,8 +90,6 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 		})
 		.join('/');
 
-	const uri: string = `https://standards-ontotest.oftrust.net/v2/Context/${classLink}/`;
-
 	const isOnlyVocabulary: boolean = classLink
 		.split('/')
 		.some((s: string) => {
@@ -128,7 +126,6 @@ const GeneralInformation: React.FC<GeneralInformationTypes> = (props) => {
 				id={id}
 				isOnlyVocabulary={isOnlyVocabulary}
 				superclasses={superclasses}
-				uri={uri}
 				type={type}
 				uriList={uriList}
 			/>

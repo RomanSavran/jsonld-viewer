@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import SystemAPI from '../services/api';
 import Ajv from 'ajv';
@@ -9,11 +8,14 @@ import {
   Theme,
   Button
 } from '@material-ui/core';
+import Table from '../components/Table';
 import Spinner from '../components/Spinner';
 import { modifySchemaValidateError } from '../utils/helpers';
 import { RoutesContext } from '../context/RoutesContext';
 import clsx from 'clsx';
+import P from '../utils/platform-helper';
 import { extractTextForPropertyGrid } from '../utils/helpers';
+import Info from '../components/Info';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,8 +81,48 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type DataExplainerProps = {
-  classesList: Array<{[key: string]: string}>,
-  propData: Array<{[key: string]: string}>
+  classesList: Array<{ [key: string]: string }>,
+  propData: Array<{ [key: string]: string }>
+}
+
+type StateValueType = {
+  data: {
+    currentClass: any,
+    propertiesList: Array<{ [key: string]: string }> | null
+  },
+  loading: boolean,
+  error: {
+    status: boolean,
+    message: string
+  }
+}
+
+function getTableHeaders(language: string) {
+  return language === 'en' ? [
+    { id: 'category', label: 'Property category' },
+    { id: 'id', label: 'Property' },
+    { id: 'labelEn', label: 'Label' },
+    { id: 'commentEn', label: 'Description' },
+    { id: 'range', label: 'Range' },
+    { id: 'value', label: 'Value' }
+  ] : [
+      { id: 'category', label: 'Property category' },
+      { id: 'id', label: 'Property' },
+      { id: 'labelEn', label: 'Label (en-us)' },
+      { id: 'labelFi', label: 'Label (fi-fi)' },
+      { id: 'commentEn', label: 'Description (en-us)' },
+      { id: 'commentFi', label: 'Description (en-us)' },
+      { id: 'range', label: 'Range' },
+      { id: 'value', label: 'Value' }
+    ]
+}
+
+function getValue(dataObj: any, property: any) {
+  if (['data', 'id', 'metadata'].includes(property.id)) {
+    return ''
+  }
+
+  return property.id in dataObj.metadata ? dataObj.metadata[property.id] : '';
 }
 
 function getErrorMessage(data: any) {
@@ -106,7 +148,6 @@ function parseDataExample(data: string) {
 }
 
 function isContextExist(data: any) {
-  console.log(data);
   return '@context' in data ? data['@context'] : {
     type: 'error',
     message: 'There\'s no @context in your data'
@@ -114,7 +155,6 @@ function isContextExist(data: any) {
 }
 
 async function getContextFile(url: string) {
-  console.log(url);
   try {
     const contextData = await SystemAPI.getEntityByURL(url);
 
@@ -160,7 +200,7 @@ function schemaValidate(schema: any, data: any) {
 }
 
 function isError(res: any) {
-  return (typeof res === 'object' && 'type' in res && res.type === 'error') || res === 'error' ;
+  return (typeof res === 'object' && 'type' in res && res.type === 'error') || res === 'error';
 }
 
 async function getResult(data: any) {
@@ -202,19 +242,23 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
   propData
 }) => {
   const classes = useStyles();
-  const {pathname} = useLocation();
   const { i18n } = useTranslation();
-  const {handleChangeCurrentPath} = useContext(RoutesContext);
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [orderBy, setOrderBy] = useState('category');
+  const { handleChangeCurrentPath } = useContext(RoutesContext);
   const [value, setValue] = useState('');
-  const [resultValue, setResultValue] = useState({
-    data: null,
+  const [resultValue, setResultValue] = useState<StateValueType>({
+    data: {
+      currentClass: null,
+      propertiesList: null
+    },
     loading: false,
     error: {
       status: false,
       message: ''
     }
   });
-
+  const viewerBlock = useRef(null);
   const language = i18n.language;
 
   useEffect(() => {
@@ -225,9 +269,21 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
     setValue(event.target.value);
   }
 
+  const scrollTo = () => {
+    const offsetTop = viewerBlock.current.offsetTop;
+
+    window.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth'
+    })
+  }
+
   const handleClick = async () => {
     setResultValue({
-      data: null,
+      data: {
+        currentClass: null,
+        propertiesList: null
+      },
       loading: true,
       error: {
         status: false,
@@ -239,7 +295,10 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
 
     if (typeof result === 'object' && 'type' in result && result.type === 'error') {
       setResultValue({
-        data: null,
+        data: {
+          currentClass: null,
+          propertiesList: null
+        },
         loading: false,
         error: {
           status: true,
@@ -247,13 +306,14 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
         }
       })
 
-      return ;
+      return;
     }
     const id = result
       .split('/')
       .filter((s: string) => !!s)
       .pop();
-    const currentClass = classesList.find(cls => cls.id === id);
+    const currentClass = classesList.find(cls => cls.id === id) || null;
+    const currentObj = JSON.parse(value);
     const property = propData
       .filter((property: any) => {
         return property.domain.some((domain: any) => {
@@ -263,6 +323,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
       .map((item: any) => {
         return {
           ...item,
+          value: getValue(currentObj, item),
           label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),
           labelEn: extractTextForPropertyGrid(item, 'en', 'label', id),
           labelFi: extractTextForPropertyGrid(item, 'fi', 'label', id),
@@ -271,10 +332,29 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
           comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
         }
       })
-      console.log(currentClass, property)
+    setResultValue({
+      data: {
+        currentClass,
+        propertiesList: property
+      },
+      loading: false,
+      error: {
+        status: false,
+        message: ''
+      }
+    })
+
+    scrollTo();
   }
 
-  const {loading, data, error} = resultValue;
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc')
+    setOrderBy(property);
+  }
+
+  const { loading, data, error } = resultValue;
+  const { propertiesList, currentClass } = data;
 
   return (
     <div className={classes.blockWrapper}>
@@ -297,7 +377,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
             </div>
           ) : loading ? <Spinner /> : null
         }
-        <Button 
+        <Button
           classes={{
             root: classes.validateBtn,
           }}
@@ -308,14 +388,37 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
         </Button>
       </div>
       {
-        data ? (
-          <div className={classes.block}>
-
+        data.currentClass ? (
+          <div
+            className={classes.block}
+            ref={viewerBlock}
+          >
+            <Info
+              id={currentClass.id}
+              superclasses={
+                P.getParentsClasses(
+                  currentClass.url,
+                  P.getTab(currentClass.url),
+                  currentClass.id
+                )
+              }
+              type="class"
+              isOnlyVocabulary={false}
+              uri={`${window.location.origin}${currentClass.url}`}
+              label={language === 'en' ? currentClass.labelEn : currentClass.labelFi}
+              comment={language === 'en' ? currentClass.commentEn : currentClass.commentFi}
+            />
+            <Table
+              headers={getTableHeaders(language)}
+              order={order}
+              orderBy={orderBy}
+              data={propertiesList}
+              handleRequestSort={handleRequestSort}
+            />
           </div>
         ) : null
       }
     </div>
-
   )
 }
 

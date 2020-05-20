@@ -19,7 +19,7 @@ type InfoProps = {
     id: string,
     superclasses: string[],
     isOnlyVocabulary: boolean,
-    uri: string,
+    uri?: string,
     type: 'class' | 'prop',
     uriList?: Array<{uri: string, title: string}>
 }
@@ -146,6 +146,8 @@ const Info: React.FC<InfoProps> = ({
     const classes = useStyles();
     const { t } = useTranslation();
 
+    const url = uri || window.location.href;
+
     return (
         <div>
             <h2 className={clsx(classes.h2, {
@@ -166,7 +168,7 @@ const Info: React.FC<InfoProps> = ({
                                     {type === 'class' ? t('Context URI') : t('Vocabulary URI')}
                                 </h4>
                                 <CopyTooltip
-                                    copyText={window.location.href}
+                                    copyText={url}
                                     placement="right"
                                 >
                                     <IconButton
@@ -184,11 +186,11 @@ const Info: React.FC<InfoProps> = ({
                             </div>
                             <a
                                 className={classes.link}
-                                href={window.location.href}
+                                href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                {window.location.href}
+                                {url}
                             </a>
                         </div>
                     ) : null
