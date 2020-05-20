@@ -118,11 +118,20 @@ function getTableHeaders(language: string) {
 }
 
 function getValue(dataObj: any, property: any) {
-  if (['data', 'id', 'metadata'].includes(property.id)) {
-    return ''
-  }
+  if (['data', 'metadata'].includes(property.id)) return '';
+  return property.id in dataObj ? dataObj[property.id] : '';
+}
 
-  return property.id in dataObj.metadata ? dataObj.metadata[property.id] : '';
+function expandObj(data: {[key: string]: string} | string) {
+  return typeof data === 'object' ? data : {};
+}
+
+function modifyObj(obj: any) {
+  return {
+    ...obj,
+    ...expandObj(obj.data),
+    ...expandObj(obj.metadata)
+  }
 }
 
 function getErrorMessage(data: any) {
@@ -157,7 +166,6 @@ function isContextExist(data: any) {
 async function getContextFile(url: string) {
   try {
     const contextData = await SystemAPI.getEntityByURL(url);
-
     return contextData;
   } catch {
     return {
@@ -242,7 +250,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
   propData
 }) => {
   const classes = useStyles();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState('category');
   const { handleChangeCurrentPath } = useContext(RoutesContext);
@@ -264,6 +272,12 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
   useEffect(() => {
     handleChangeCurrentPath('data-explainer')
   }, [handleChangeCurrentPath]);
+
+  useEffect(() => {
+    if (resultValue.data.currentClass) {
+      scrollTo();
+    }
+  }, [resultValue.data])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
@@ -323,7 +337,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
       .map((item: any) => {
         return {
           ...item,
-          value: getValue(currentObj, item),
+          value: getValue(modifyObj(currentObj), item),
           label: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'label', id)} (${extractTextForPropertyGrid(item, 'en', 'label', id)})` : extractTextForPropertyGrid(item, 'en', 'label', id),
           labelEn: extractTextForPropertyGrid(item, 'en', 'label', id),
           labelFi: extractTextForPropertyGrid(item, 'fi', 'label', id),
@@ -332,6 +346,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
           comment: language === 'fi' ? `${extractTextForPropertyGrid(item, 'fi', 'comment', id)} (${extractTextForPropertyGrid(item, 'en', 'comment', id)})` : extractTextForPropertyGrid(item, 'en', 'comment', id),
         }
       })
+      .filter((property: any) => property.value !== '');
     setResultValue({
       data: {
         currentClass,
@@ -343,8 +358,6 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
         message: ''
       }
     })
-
-    scrollTo();
   }
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
@@ -359,7 +372,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
   return (
     <div className={classes.blockWrapper}>
       <div className={classes.block}>
-        <p className={classes.title}>Paste your data down below</p>
+        <p className={classes.title}>{t('Paste your data down below')}</p>
         <textarea
           spellCheck="false"
           className={clsx(classes.textarea, {
@@ -373,7 +386,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
         {
           error.status ? (
             <div className={classes.errorMessage}>
-              Error: {error.message}
+              {t('Error')}: {error.message}
             </div>
           ) : loading ? <Spinner /> : null
         }
@@ -384,7 +397,7 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
           onClick={handleClick}
           disabled={!value}
         >
-          Explaine
+          {t('Explaine')}
         </Button>
       </div>
       {

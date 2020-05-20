@@ -132,7 +132,7 @@ const TopBar: React.FC = () => {
             >
                 <Grid
                     item
-                    xs={6}
+                    xs={5}
                 >
                     <div className={classes.logoWrapper}>
                         <img
@@ -144,7 +144,7 @@ const TopBar: React.FC = () => {
                 </Grid>
                 <Grid
                     item
-                    xs={6}
+                    xs={7}
                 >
                     {isDesktop ? (
                         <ul className={classes.ul}>

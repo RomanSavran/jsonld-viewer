@@ -28,7 +28,10 @@ class GithubAPI {
     
             return await res.json();
         } catch (err) {
-            return 'error';
+            return {
+                type: 'error',
+                message: 'Something went wrong'
+            };
         }
         
     }
@@ -41,12 +44,18 @@ class GithubAPI {
             });
     
             if (!res.ok) {
-                return res.status
+                return {
+                    type: 'error',
+                    message: 'Wrong context file'
+                }
             }
     
             return await res.json();
         } catch (err) {
-            return 'error';
+            return {
+                type: 'error',
+                message: 'Wrong context file'
+            };
         }
         
     }
