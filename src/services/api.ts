@@ -44,17 +44,19 @@ class GithubAPI {
             });
     
             if (!res.ok) {
+                console.error('Invalid context')
                 return {
                     type: 'error',
-                    message: 'Wrong context file'
+                    message: 'Invalid context'
                 }
             }
     
             return await res.json();
         } catch (err) {
+            console.error('Invalid context')
             return {
                 type: 'error',
-                message: 'Wrong context file'
+                message: 'Invalid context'
             };
         }
         
