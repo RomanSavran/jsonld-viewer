@@ -46,8 +46,6 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-
-
 export function App() {
 	const classes = useStyles();
 	const [value, setValue] = useState({
@@ -140,12 +138,6 @@ export function App() {
 								propData={propData}
 							/>
 						)}/>
-						<Route path="/v2/*" render={() => (
-							<ClassesDetails
-								classesList={classesList}
-								propData={propData}
-							/>
-						)} />
 						<Route path="/v2/Vocabulary/*" render={({ match }) => {
 							const isClass = match.url.split('/')
 								.some((s: string) => {
@@ -162,6 +154,12 @@ export function App() {
 							return isClass ? <ClassesDetails classesList={classesList} propData={propData} /> :
 								<PropertyDetails classesList={classesList} propData={propData} />
 						}} />
+						<Route path="/v2/*" render={() => (
+							<ClassesDetails
+								classesList={classesList}
+								propData={propData}
+							/>
+						)} />
 						<Route path="/v2/404" exact component={Error404} />
 						<Redirect to="/v2/404" />
 					</Switch>

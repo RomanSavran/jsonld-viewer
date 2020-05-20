@@ -140,7 +140,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   const classes = useStyles();
   const theme: Theme = useTheme();
   const { t, i18n } = useTranslation();
-  const { currentPath } = useContext(RoutesContext);
+  const { currentPath, handleChangeCurrentPath } = useContext(RoutesContext);
   const {pathname} = useLocation();
   const history = useHistory();
   const isDesktop: boolean = !useMediaQuery(theme.breakpoints.down('md'));
@@ -189,6 +189,10 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
         }
       })
   }, [pathname, propData, language, id]);
+
+  useEffect(() => {
+    handleChangeCurrentPath('classes-hierarchy')
+  }, [handleChangeCurrentPath]);
 
   useEffect(() => {
     setTabValue(pathNameToTabValue(currentTab, path.split('/').pop() || ''));

@@ -21,6 +21,10 @@ const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesList, propData}
     const currentProperty = propData.find((item: any) => item.id === id);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
         handleChangeCurrentPath('properties-grid');
     }, [handleChangeCurrentPath]);
     
