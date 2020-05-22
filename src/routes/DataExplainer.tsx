@@ -368,7 +368,11 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
 
   const { loading, data, error } = resultValue;
   const { propertiesList, currentClass } = data;
-
+  let currentId = '';
+  if (currentClass) {
+    currentId = currentClass.id in manualPathVocab ? manualPathVocab[currentClass.id] : currentClass.id;
+  }
+  
   return (
     <div className={classes.blockWrapper}>
       <div className={classes.block}>
@@ -412,7 +416,9 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
                 P.getHierarchy(
                   currentClass.url,
                   currentClass.id
-                ).split('/')
+                )
+                .split('/')
+                .filter(s => s !== currentId)
               }
               type="class"
               isOnlyVocabulary={false}
