@@ -37,7 +37,11 @@ const useStyles = makeStyles((theme: Theme) =>
       border: '1px solid transparent',
       boxSizing: 'border-box',
       color: 'rgb(12, 77, 123)',
-      resize: 'vertical'
+      resize: 'vertical',
+      '&:focus': {
+        border: '1px solid rgb(12, 118, 203)',
+        outline: 'none'
+      }
     },
     blockWrapper: {
       display: 'flex',
