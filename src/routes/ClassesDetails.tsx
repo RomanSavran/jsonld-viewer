@@ -244,7 +244,6 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
         'outputcontext',
       ].includes(newValue) ? '/' : ''
     );
-    console.log(newValue);
     setTabValue(newValue);
     history.push(newPath);
   };
