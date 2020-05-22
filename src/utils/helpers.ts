@@ -1,6 +1,9 @@
 import values from 'lodash/values';
 import has from 'lodash/has';
 import get from 'lodash/get';
+import keyBy from 'lodash/keyBy';
+import P from './platform-helper';
+import {filterClassList} from './lists';
 
 type TextType = {
     '@language': 'en-us' | 'fi-fi',
@@ -76,16 +79,18 @@ export function modifyClassElement(classElement: any) {
     const commentKey = 'http://www.w3.org/2000/01/rdf-schema#comment';
     const labelKey = 'http://www.w3.org/2000/01/rdf-schema#label';
     const parentKey = 'http://www.w3.org/2000/01/rdf-schema#subClassOf';
+    const manualPathKey = 'https://standards.oftrust.net/v2/Vocabulary/manualPath';
 
     const partialPath: string = get(classElement, '@id').split(splitter).pop() || '';
-    const id: string = partialPath.split('/').pop() || '';
+    const manualPath = has(classElement, manualPathKey) ? get(classElement, manualPathKey).pop()['@value'] : null;
+    let id: string = partialPath.split('/').pop() || '';
     const isContext: boolean = partialPath
         .split('/')
         .some((s: string) => {
             return ['Identity', 'Link', 'DataProductContext', 'Annotation'].includes(s)
         });
     const parentBody = has(classElement, parentKey) ? get(classElement, parentKey).pop() : null;
-    const parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
+    let parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
 
     const labelEn = extractTextData(classElement, labelKey, 'en-us');
     const labelFi = extractTextData(classElement, labelKey, 'fi-fi');
@@ -101,7 +106,8 @@ export function modifyClassElement(classElement: any) {
         labelFi,
         commentEn,
         commentFi,
-        url
+        url,
+        manualPath
     }
 }
 
@@ -190,6 +196,7 @@ export function buildTree(list: Array<{ [key: string]: string }>) {
             return {
                 ...acc,
                 [currentId]: {
+                    id: currentId,
                     root: true,
                     children: [],
                     path: current.url
@@ -216,6 +223,7 @@ export function buildTree(list: Array<{ [key: string]: string }>) {
                         ]
                     },
                     [currentId]: {
+                        id: currentId,
                         path: current.url,
                         children: []
                     }
@@ -288,11 +296,11 @@ export function extractTextForGrid<T extends object>(item: T, language: string, 
     return ''
 }
 
-export function pathNameToTabValue(path: string, id: string): string {
+export function pathNameToTabValue(tab: string, pathname: string): string {
     if (
-        id.includes('DataProductContext')
+        pathname.includes('DataProductContext')
     ) {
-        switch (path.toLowerCase()) {
+        switch (tab.toLowerCase()) {
             case 'context':
                 return 'generalinformation'
             default:
@@ -300,11 +308,11 @@ export function pathNameToTabValue(path: string, id: string): string {
         }
     }
     if (
-        id.includes('DataProductOutput') ||
-        id.includes('DataProductParameters')
+        pathname.includes('DataProductOutput') ||
+        pathname.includes('DataProductParameters')
     ) {
-        const params = id.includes('DataProductOutput') ? 'output' : 'parameters';
-        switch (path.toLowerCase()) {
+        const params = pathname.includes('DataProductOutput') ? 'output' : 'parameters';
+        switch (tab.toLowerCase()) {
             case 'context':
                 return `${params}context`;
             case 'schema':
@@ -315,7 +323,7 @@ export function pathNameToTabValue(path: string, id: string): string {
                 return 'generalinformation';
         }
     } else {
-        switch (path.toLowerCase()) {
+        switch (tab.toLowerCase()) {
             case 'context':
                 return 'generalinformation';
             case 'vocabulary':
@@ -371,9 +379,15 @@ export function getLanguageFromStorage(): 'en' | 'fi' {
     return JSON.parse(value);
 };
 
-export function getURIListById(path: string) {
-    const parameters = path.replace(/DataProductContext/gi, 'DataProductParameters');
-    const output = path.replace(/DataProductContext/gi, 'DataProductOutput');
+export function getURIListById(path: string, manualPathVocab: {[key: string]: string} | null = null) {
+    if (manualPathVocab) {
+        path = path
+            .split('/')
+            .map(key => key in manualPathVocab ? manualPathVocab[key] : key)
+            .join('/')
+    }
+    let parameters = path.replace(/DataProductContext|DataProductOutput/gi, 'DataProductParameters');
+    let output = path.replace(/DataProductContext|DataProductParameters/gi, 'DataProductOutput');
 
     const parametersContext = `${window.location.origin}/v2/Context/${parameters}/`;
     const parametersSchema = `${window.location.origin}/v2/Schema/${parameters}`;
@@ -414,4 +428,46 @@ export function modifySchemaValidateError(error: any) {
     }
 
     return error.message;
+}
+
+export function getAppData(data: any) {
+    const classesList: Array<{ [key: string]: string }> = [];
+    const propertiesList: Array<{ [key: string]: any }> = [];
+    const otherList: IdElementType[] = [];
+    const manualPathVocab: {[key: string]: string} = {}
+
+    data.forEach((element: any) => {
+        if ('@type' in element) {
+			const type = P.getType(element['@type']);
+			if (P.isClass(type)) {
+				if (
+					P.isVisibleClass(filterClassList, element['@id'])
+				) {
+					classesList.push(modifyClassElement(element));
+				}
+			} else if (P.isProperty(type)) {
+				propertiesList.push(element)
+			}
+		} else {
+			otherList.push(modifyIdElement(element));
+		}
+    });
+
+    classesList.forEach(item => {
+        if (get(item, 'manualPath')) {
+            manualPathVocab[item.id] = item.manualPath
+        }
+    })
+
+    return {
+        manualPathVocab,
+        classesList: classesList.map(item => ({
+            ...item,
+            url: item.manualPath ? item.url
+                .split('/')
+                .map(s => s in manualPathVocab ? manualPathVocab[s] : s)
+                .join('/') : item.url
+        })),
+        propertiesList: propertiesList.map((item: any) =>  modifyProps(item, keyBy(otherList, 'id')))
+    }
 }

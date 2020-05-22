@@ -36,11 +36,19 @@ class PlatformHelper {
         [0] || ''
     }
 
-    getId(fullPath: string): string {
-        const id = fullPath
+    getId(fullPath: string, manualPathVocab: {[key: string]: string} | null = null): string {
+        let id = fullPath
             .split('/')
             .filter(s => !!s)
-            .pop() || ''
+            .pop() || '';
+
+        if (manualPathVocab) {
+            Object.keys(manualPathVocab).forEach(key => {
+                if (manualPathVocab[key] === id) {
+                    id = key;
+                }
+            });
+        }
 
         if (
             id.includes('DataProductParameters') ||
@@ -74,6 +82,17 @@ class PlatformHelper {
             })
     }
     
+    getHierarchy(path: string, id: string): string {
+        console.log(path, id);
+        return path
+            .replace(/Vocabulary|ClassDefinitions|Schema|DataExample|Parameters|Output/gi, 'Context')
+            .split('/Context/')
+            .filter(s => !!s)
+            .pop()
+            .split('/')
+            .filter(s => !!s)
+            .join('/')
+    }
 }
 
 export default new PlatformHelper();

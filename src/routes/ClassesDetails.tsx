@@ -1,21 +1,18 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { RoutesContext } from '../context/RoutesContext';
 import {
   Grid,
   makeStyles,
   createStyles,
-  TextField,
   useMediaQuery,
   useTheme,
   Theme,
   Tabs,
   Tab
 } from '@material-ui/core';
-import Tree from '../components/Tree';
+import TreeView from '../components/TreeView';
 import {
-  buildTree,
-  getRootNodes,
   pathNameToTabValue,
   tabValueToPathName,
   extractTextForPropertyGrid,
@@ -45,18 +42,20 @@ import {
   dataProductTabsList,
   vocabularyIdList
 } from '../utils/lists';
+import Spinner from '../components/Spinner';
 
-function getDataProductPath(path: string, tabValue: string) {
+function getDataProductPath(path: string, tabValue: string, id: string, manualPathVocab: {[key: string]: string}) {
   const output = tabValue.includes('parameters') ? 'DataProductParameters' :
     tabValue === 'generalinformation' ? 'DataProductContext' : 'DataProductOutput';
   if (
-    path.includes('DataProductContext') ||
-    path.includes('DataProductParameters') ||
-    path.includes('DataProductOutput')
+    /DataProductContext|DataProductParameters|DataProductOutput/.test(path)
   ) {
-    return path.replace(/DataProductContext|DataProductParameters|DataProductOutput/gi, output)
+    return path
+      .split('/')
+      .map(s => s in manualPathVocab ? manualPathVocab[s] : s)
+      .join('/')
+      .replace(/DataProductContext|DataProductParameters|DataProductOutput/gi, output)
   }
-
   return path
 }
 
@@ -69,9 +68,10 @@ const tabsConfig: Array<{ value: string, label: string }> = [
   { value: 'dataexample', label: 'Data Example' }
 ]
 
-type ClassesHigherarchyType = {
+type ClassesDetailsProps = {
   classesList: any[],
-  propData: any
+  propData: any,
+  manualPathVocab: {[key: string]: string}
 }
 
 const useStyles = makeStyles((theme) =>
@@ -133,24 +133,26 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
+const ClassesDetails: React.FC<ClassesDetailsProps> = ({
   classesList,
-  propData
+  propData,
+  manualPathVocab
 }) => {
   const classes = useStyles();
   const theme: Theme = useTheme();
   const { t, i18n } = useTranslation();
-  const { currentPath, handleChangeCurrentPath } = useContext(RoutesContext);
-  const {pathname} = useLocation();
+  const { currentPath } = useContext(RoutesContext);
+  const { pathname } = useLocation();
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
   const history = useHistory();
   const isDesktop: boolean = !useMediaQuery(theme.breakpoints.down('md'));
-  const lgAndMdView = useMediaQuery(theme.breakpoints.between('md', 'lg'));
-  const [filter, handleFilterChange] = useState('');
   const [hasError, setHasError] = useState(false);
 
   const path = P.getPath(pathname, classesDetailsPath)
   const currentTab = P.getTab(pathname);
-  const id: string = P.getId(pathname);
+  const id: string = P.getId(pathname, manualPathVocab);
+  const initId = useRef(P.getId(pathname, manualPathVocab));
   const superclasses = useMemo(() => {
     return P.getParentsClasses(
       pathname,
@@ -158,17 +160,17 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
       id
     )
   }, [currentTab, id, pathname])
-  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
+  const [tabValue, setTabValue] = useState(pathNameToTabValue(currentTab, pathname));
 
   const element: any = classesList.find(item => item.id === id);
   const isOnlyVocabulary = P.checkIsVocabulary(path, vocabularyClassList, vocabularyIdList, id);
-  const isOnlyContext = id.includes('DataProductContext');
+  const isDataProduct = /DataProductContext|DataProductOutput|DataProductParameters/.test(pathname);
   const language = i18n.language;
   const shouldTreeView = currentPath === 'classes-hierarchy';
 
-  const filteredTabsConfig: Array<{ value: string, label: string }> = isOnlyVocabulary && !isOnlyContext ?  
-    vocabularyTabsList : 
-    isOnlyContext && !isOnlyVocabulary ? dataProductTabsList : tabsConfig;
+  let filteredTabsConfig: Array<{ value: string, label: string }> = isOnlyVocabulary && !isDataProduct ?
+    vocabularyTabsList :
+    isDataProduct && !isOnlyVocabulary ? dataProductTabsList : tabsConfig;
 
   const properties = useMemo(() => {
     return propData
@@ -191,18 +193,26 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
   }, [pathname, propData, language, id]);
 
   useEffect(() => {
-    handleChangeCurrentPath('classes-hierarchy')
-  }, [handleChangeCurrentPath]);
-
-  useEffect(() => {
-    setTabValue(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
-  }, [path, currentTab]);
-
-  useEffect(() => {
     window.scrollTo(0, 0);
-    setTabValue(pathNameToTabValue(currentTab, path.split('/').pop() || ''));
+    const newTab = pathNameToTabValue(currentTab, pathname) || 'generalinformation';
+    if (
+      (tabValue !== newTab) &&
+      (initId.current !== id)
+    ) {
+      setTabValue(newTab)
+    } else if (
+      (tabValue === newTab) &&
+      (initId.current === id)
+    ) {
+      return;
+    } else {
+      forceUpdate();
+    }
+
+    initId.current = id;
+
     /* eslint-disable-next-line */
-  }, [currentTab && id]);
+  }, [id])
 
   useEffect(() => {
     setHasError(false);
@@ -215,13 +225,8 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     /* eslint-disable-next-line */
   }, [location.pathname]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    handleFilterChange(value);
-  }
-
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
-    const newPath = `/v2/${tabValueToPathName(newValue)}/${getDataProductPath(path, newValue)}`.concat(
+    const newPath = `/v2/${tabValueToPathName(newValue)}/${getDataProductPath(path, newValue, id, manualPathVocab)}`.concat(
       [
         'context',
         'generalinformation',
@@ -233,15 +238,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     history.push(newPath);
   };
 
-  const classesTree = useMemo(() => buildTree(classesList), [classesList]);
-  const rootNodes = useMemo(() => {
-    const root = getRootNodes(classesTree);
-
-    return [
-      ...root.slice(1),
-		  ...root.slice(0, 1)
-    ]
-  }, [classesTree]);
+  // || P.getHierarchy(element.url, id) !== P.getHierarchy(pathname, id)
 
   if (!element) return <Error404 />
 
@@ -257,7 +254,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
     superclasses
   } : null;
 
-  const uriList = isOnlyContext ? getURIListById(path) : null;
+  const uriList = isDataProduct ? getURIListById(path, manualPathVocab) : null;
 
   const generalinfo = id.includes('DataProductContext') ? (
     <GeneralInformationDataProduct
@@ -286,27 +283,14 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
           item
           xs={3}
         >
-          <TextField
-            className={classes.inputRoot}
-            placeholder={t('Filter...')}
-            value={filter}
-            onChange={handleInputChange}
-            InputProps={{
-              disableUnderline: true
-            }}
-          />
-          <Tree
-            filter={filter.toLowerCase()}
-            rootNodes={rootNodes}
-            tree={classesTree}
-          />
+          <TreeView classesList={classesList} />
         </Grid>
       ) : null}
       <Grid
         item
         xs={shouldTreeView && isDesktop ? 9 : 12}
       >
-        {hasError ? <Error404 /> :
+        {(initId.current !== id) ? <Spinner /> : hasError ? <Error404 /> :
           (
             <>
               <Tabs
@@ -315,7 +299,7 @@ const ClassesDetails: React.FC<ClassesHigherarchyType> = ({
                   indicator: classes.tabsIndicator,
                   flexContainer: classes.tabsFlexContainer
                 }}
-                variant={lgAndMdView ? "scrollable" : "standard"}
+                variant="standard"
                 value={tabValue}
                 onChange={handleTabChange}
                 aria-label="Tabs"

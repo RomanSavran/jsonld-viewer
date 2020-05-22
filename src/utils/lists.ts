@@ -42,11 +42,24 @@ const dataProductTabsList = [
     { value: 'dataexampleparameters', label: 'Data Example' }
 ]
 
+const classesIdList = [
+    'Identity',
+    'Annotation',
+    'Link',
+    'PhysicalProperty',
+    'Technical',
+    'UnitOfMeasure',
+    'DataProductContext',
+    'DataProductParameters',
+    'DataProductOutput'
+];
+
 export {
     vocabularyIdList,
     vocabularyTabsList,
     dataProductTabsList,
     classesDetailsPath,
     filterClassList,
-    vocabularyClassList
+    vocabularyClassList,
+    classesIdList
 }

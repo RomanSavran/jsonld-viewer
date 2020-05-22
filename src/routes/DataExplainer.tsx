@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type DataExplainerProps = {
   classesList: Array<{ [key: string]: string }>,
-  propData: Array<{ [key: string]: string }>
+  propData: Array<{ [key: string]: any }>
 }
 
 type StateValueType = {

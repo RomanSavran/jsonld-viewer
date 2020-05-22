@@ -96,8 +96,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
     handleChangeTreeState(nodePath, status)
   }
 
-  const id: string = P.getId(node.path)
-
+  const id: string = P.getId(node.path);
   const isExpand = id in treeState ? treeState[id] : false;
 
   return (
@@ -115,7 +114,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
               return P.getId(location.pathname) === id;
             }}
           >
-            {id}
+            {node.id}
           </NavLink>
           <Expand
 
