@@ -193,9 +193,12 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
   }, [pathname, propData, language, id]);
 
   useEffect(() => {
-    const newTab = pathNameToTabValue(currentTab, pathname) || 'generalinformation';
-    setTabValue(newTab);
-
+    if (tabValue === 'context') {
+      setTabValue('context');
+    } else {
+      const newTab = pathNameToTabValue(currentTab, pathname) || 'generalinformation';
+      setTabValue(newTab);
+    }
     /* eslint-disable-next-line */
   }, [pathname]);
 
@@ -241,6 +244,7 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
         'outputcontext',
       ].includes(newValue) ? '/' : ''
     );
+    console.log(newValue);
     setTabValue(newValue);
     history.push(newPath);
   };
