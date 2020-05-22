@@ -91,8 +91,6 @@ const Tree: React.FC<TreeTypes> = ({
 	const classes = useStyles();
 	const { treeState, handleChangeTreeState } = useContext(RoutesContext);
 
-	console.log(treeState);
-
 	const handleChangeParentStatus = (nodePath: string, status: boolean) => (event: MouseEvent<HTMLSpanElement>) => {
 		handleChangeTreeState(nodePath, status)
 	};

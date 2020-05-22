@@ -245,9 +245,10 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
     history.push(newPath);
   };
 
-  // || P.getHierarchy(element.url, id) !== P.getHierarchy(pathname, id)
-
-  if (!element) return <Error404 />
+  if (
+    !element || 
+    (P.getHierarchy(element.url, id) !== P.getHierarchy(pathname.replace(/DataProductParameters|DataProductOutput/, 'DataProductContext'), id))
+  ) return <Error404 />
 
   const labelEn = element.labelEn || 'Has no label';
   const labelFi = element.labelFi || 'Ei etikettiä';
