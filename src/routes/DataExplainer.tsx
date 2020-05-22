@@ -86,7 +86,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type DataExplainerProps = {
   classesList: Array<{ [key: string]: string }>,
-  propData: Array<{ [key: string]: any }>
+  propData: Array<{ [key: string]: any }>,
+  manualPathVocab: {[key: string]: string}
 }
 
 type StateValueType = {
@@ -237,7 +238,8 @@ async function getResult(data: any) {
 
 const DataExplainer: React.FC<DataExplainerProps> = ({
   classesList,
-  propData
+  propData,
+  manualPathVocab
 }) => {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
@@ -316,7 +318,14 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
       .split('/')
       .filter((s: string) => !!s)
       .pop();
-    const currentClass = classesList.find(cls => cls.id === id) || null;
+    const currentClass = classesList.find(cls => {
+      const isDataProduct = cls.id.includes('DataProductContext');
+
+      if (isDataProduct) {
+       return manualPathVocab[cls.id] === id; 
+      }
+      return cls.id === id
+    }) || null;
     const currentObj = JSON.parse(value);
     const property = propData
       .filter((property: any) => {

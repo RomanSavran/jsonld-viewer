@@ -104,6 +104,7 @@ export function App() {
 						)} />
 						<Route path="/v2/data-explainer" exact component={() => (
 							<DataExplainer 
+								manualPathVocab={manualPathVocab}
 								classesList={classesList}
 								propData={propertiesList}
 							/>

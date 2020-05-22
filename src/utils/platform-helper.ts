@@ -84,7 +84,6 @@ class PlatformHelper {
     }
     
     getHierarchy(path: string, id: string): string {
-        console.log(path, id);
         return path
             .replace(/Vocabulary|ClassDefinitions|Schema|DataExample|Parameters|Output/gi, 'Context')
             .split('/Context/')
