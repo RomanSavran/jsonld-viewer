@@ -44,6 +44,7 @@ export type PropertyItemType = {
 }
 
 export type NodeType = {
+    id: string,
     path: string,
     children: string[],
     root?: boolean

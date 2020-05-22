@@ -91,6 +91,8 @@ const Tree: React.FC<TreeTypes> = ({
 	const classes = useStyles();
 	const { treeState, handleChangeTreeState } = useContext(RoutesContext);
 
+	console.log(treeState);
+
 	const handleChangeParentStatus = (nodePath: string, status: boolean) => (event: MouseEvent<HTMLSpanElement>) => {
 		handleChangeTreeState(nodePath, status)
 	};
@@ -104,8 +106,8 @@ const Tree: React.FC<TreeTypes> = ({
 					.pop() || '';
 				const isExpand = id in treeState ? treeState[id] : false;
 				return (
-					<li className={classes.li} key={node.path}>
-						<div className={classes.strokeWrapper} onClick={handleChangeParentStatus(node.path, !isExpand)}>
+					<li className={classes.li} key={node.id}>
+						<div className={classes.strokeWrapper} onClick={handleChangeParentStatus(node.id, !isExpand)}>
 							<span
 								className={classes.square}
 							>

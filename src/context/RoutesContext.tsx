@@ -8,6 +8,7 @@ type RoutesContextProps = {
 function createPathObject(path: string, status: boolean) {
     return path
         .split('/')
+        .map(s => s.replace(/DataProductParameters|DataProductOutput/, 'DataProductContext'))
         .filter(s => (
 			!['', 'v2', 'context', 'classdefinitions', 'vocabulary', 'schema'].includes(s.toLowerCase())
 		))

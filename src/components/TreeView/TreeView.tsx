@@ -13,6 +13,9 @@ type TreeViewProps = {
 }
 
 const useStyles = makeStyles(theme => ({
+	root: {
+		overflow: 'hidden'
+	},
 	inputRoot: {
 		width: '100%',
 		paddingLeft: 15,
@@ -50,7 +53,7 @@ const TreeView: React.FC<TreeViewProps> = ({
 	];
 
 	return (
-		<>
+		<div className={classes.root}>
 			<TextField
 				className={classes.inputRoot}
 				placeholder={t("Filter...")}
@@ -65,7 +68,7 @@ const TreeView: React.FC<TreeViewProps> = ({
 				rootNodes={manualSortRootNodes}
 				tree={classesTree}
 			/>
-		</>
+		</div>
 	)
 }
 

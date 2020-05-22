@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			lineHeight: '37px',
 			textTransform: 'capitalize',
 			[theme.breakpoints.down('md')]: {
-				fontSize: 25
+				fontSize: 19
 			}
 		},
 		itemTitle: {
