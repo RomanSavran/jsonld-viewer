@@ -37,12 +37,13 @@ class PlatformHelper {
     }
 
     getId(fullPath: string, manualPathVocab: {[key: string]: string} | null = null): string {
+        const isDataProduct = /DataProductContext|DataProductParameters|DataProductOutput/gi.test(fullPath);
         let id = fullPath
             .split('/')
             .filter(s => !!s)
             .pop() || '';
 
-        if (manualPathVocab) {
+        if (manualPathVocab && isDataProduct) {
             Object.keys(manualPathVocab).forEach(key => {
                 if (manualPathVocab[key] === id) {
                     id = key;

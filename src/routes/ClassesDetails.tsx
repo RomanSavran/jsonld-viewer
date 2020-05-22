@@ -151,7 +151,7 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
 
   const path = P.getPath(pathname, classesDetailsPath)
   const currentTab = P.getTab(pathname);
-  const id: string = P.getId(pathname, manualPathVocab);
+  const id = P.getId(pathname, manualPathVocab);
   const initId = useRef(P.getId(pathname, manualPathVocab));
   const superclasses = useMemo(() => {
     return P.getParentsClasses(
@@ -191,6 +191,13 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
         }
       })
   }, [pathname, propData, language, id]);
+
+  useEffect(() => {
+    const newTab = pathNameToTabValue(currentTab, pathname) || 'generalinformation';
+    setTabValue(newTab);
+
+    /* eslint-disable-next-line */
+  }, [pathname]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
