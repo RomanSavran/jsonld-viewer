@@ -190,6 +190,7 @@ function schemaValidate(schema: any, data: any) {
   const ajv = new Ajv({
     allErrors: true
   });
+  ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
   const valid = ajv.validate(schema, data);
 
   return valid ? data['@context'] : {
@@ -408,17 +409,16 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
             <Info
               id={currentClass.id}
               superclasses={
-                P.getParentsClasses(
+                P.getHierarchy(
                   currentClass.url,
-                  P.getTab(currentClass.url),
                   currentClass.id
-                )
+                ).split('/')
               }
               type="class"
               isOnlyVocabulary={false}
               uri={`${window.location.origin}${currentClass.url}`}
-              label={language === 'en' ? currentClass.labelEn : currentClass.labelFi}
-              comment={language === 'en' ? currentClass.commentEn : currentClass.commentFi}
+              label={language === 'en' ? currentClass.labelEn || t('Has no label') : currentClass.labelFi || t('Has no label')}
+              comment={language === 'en' ? currentClass.commentEn || t('Has no description') : currentClass.commentFi || t('Has no description')}
             />
             <Table
               headers={getTableHeaders(language)}
