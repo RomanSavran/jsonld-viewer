@@ -5,28 +5,15 @@ import {
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import TreeNode from './TreeNode';
-import { Expand, MinusSquare, PlusSquare } from '../Icons';
 import {RoutesContext} from '../../context/RoutesContext';
 import clsx from 'clsx';
 import P from '../../utils/platform-helper';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles((theme: Theme) => ({
   li: {
     position: 'relative',
-    '&::before': {
-      content: "''",
-      position: 'absolute',
-      left: 0,
-      top: -5,
-      width: 1,
-      height: '100%',
-      background: 'rgb(164, 165, 167)'
-    },
-    '&:last-child': {
-      '&::before': {
-        height: 15
-      }
-    }
+    paddingLeft: 10,
   },
   filteredLi: {
     '&::before': {
@@ -41,33 +28,36 @@ const useStyles = makeStyles((theme: Theme) => ({
   strokeWrapper: {
     position: 'relative',
     display: 'inline-flex',
-    flexDirection: 'row-reverse',
     justifyContent: 'flex-end',
     alignItems: 'center',
     padding: '3px 0',
     cursor: 'pointer',
     '& > .active': {
-      color: 'rgb(0, 149, 255)'
+      color: 'rgb(194,178,255)'
     },
-    '& > .active + svg': {
-      fill: 'rgb(0, 149, 255)'
-    }
   },
   link: {
     paddingLeft: 5,
     fontSize: 12,
     fontFamily: 'Montserrat, sans-serif',
     fontWeight: 400,
-    color: 'rgb(49, 49, 49)',
+    color: '#FFF',
     textDecoration: 'none',
     '&:hover': {
-      color: 'rgb(0, 86, 179)',
       textDecoration: 'underline'
     }
   },
   squareWrapper: {
     position: 'absolute',
     left: -5,
+  },
+  chevron: {
+    width: 18,
+    height: 18,
+    color: '#fff'
+  },
+  chevronOpen: {
+    transform: 'rotate(180deg)'
   }
 }))
 
@@ -75,13 +65,6 @@ interface TreeNodeElementProps {
   filter: string,
   node: any,
   tree: any
-}
-
-const squareProps = {
-  htmlColor: "rgb(0, 149, 255)",
-  color: "action",
-  width: '12',
-  height: '12',
 }
 
 const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
@@ -116,18 +99,11 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
           >
             {node.id}
           </NavLink>
-          <Expand
-
-            width={26}
-            height={14}
-            viewBox="0 0 26 14"
-            htmlColor="rgb(164, 165, 167)"
-          />
           {
             node.children.length && !filter ? (
-              <span  className={classes.squareWrapper}>{
-                isExpand ? <MinusSquare {...squareProps} /> : <PlusSquare {...squareProps} />
-              }</span>
+              <KeyboardArrowDownIcon className={clsx(classes.chevron, {
+                [classes.chevronOpen]: isExpand
+              })}/>
             ) : null
           }
         </div>

@@ -13,15 +13,6 @@ import Error404 from '../../Errors/Error404';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
-		h2: {
-			fontSize: 30,
-			fontWeight: 600,
-			lineHeight: '37px',
-			textTransform: 'capitalize',
-			[theme.breakpoints.down('md')]: {
-				fontSize: 19
-			}
-		},
 		itemTitle: {
 			margin: 0,
 			marginRight: 10,
@@ -29,6 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			fontSize: 23,
 			fontWeight: 600,
 			lineHeight: '28px',
+			color: '#fff',
 			[theme.breakpoints.down('md')]: {
 				fontSize: 18
 			}
@@ -37,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			margin: 0,
 			fontSize: 18,
 			marginBottom: 25,
+			color: '#fff',
 			[theme.breakpoints.down('md')]: {
 				marginBottom: 10,
 				fontSize: 14

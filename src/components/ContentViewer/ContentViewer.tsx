@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         chevron: {
             fontSize: '2.3rem',
-            color: '#000',
+            color: '#fff',
             transition: '.2s linear'
         },
         chevronOpen: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '13px 23px',
-            background: 'rgb(21, 72, 109)',
+            background: '#1e1540',
             [theme.breakpoints.down('md')]: {
                 flexDirection: 'column',
                 alignItems: 'flex-start',
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
             overflow: 'hidden',
             overflowX: 'auto',
             overflowY: 'auto',
-            color: 'rgb(12, 77, 123)',
+            color: '#1e1540',
             [theme.breakpoints.down('md')]: {
                 padding: 10,
                 maxHeight: 500
@@ -82,14 +82,15 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         body: {
             marginBottom: 20,
-            background: 'linear-gradient(0deg,rgb(235, 240, 248),rgb(235, 240, 248)),rgb(29, 37, 72)'
+            background: '#eaf5ff'
         },
         h3: {
             margin: 0,
             marginBottom: 10,
             fontSize: 23,
             fontWeight: 600,
-            lineHeight: '28px'
+            lineHeight: '28px',
+            color: '#fff'
         },
         iconButton: {
             padding: 2
@@ -97,13 +98,13 @@ const useStyles = makeStyles((theme: Theme) =>
         downloadBtn: {
             padding: '4px 9px',
             fontSize: 14,
-            background: 'rgb(31, 91, 134)',
+            background: '#7955ff',
             color: 'rgb(255, 255, 255)',
             cursor: 'pointer',
             textAlign: 'center',
             transition: '.2s linear',
             '&:hover': {
-                background: 'rgb(32, 178, 170)'
+                background: 'rgb(194,178,255)'
             }
         },
         downloadBtnLink: {

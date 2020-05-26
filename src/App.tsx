@@ -18,7 +18,6 @@ import {
 	createStyles
 } from '@material-ui/core';
 import ServiceAPI from './services/api';
-import Spinner from './components/Spinner';
 import { Theme } from '@material-ui/core';
 import {
 	getAppData,
@@ -26,6 +25,7 @@ import {
 import TopBar from './components/TopBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { Error404 } from './components/Errors';
+import InitLoader from './components/InitLoader';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -72,7 +72,7 @@ export function App() {
 		}
 	}, []);
 
-	if (value.loading) return <Spinner />
+	if (value.loading) return <InitLoader />
 
 	const { data } = value;
 	const { propertiesList, classesList, manualPathVocab } = getAppData(data);
@@ -103,12 +103,12 @@ export function App() {
 							/>
 						)} />
 						<Route path="/v2/data-explainer" exact component={() => (
-							<DataExplainer 
+							<DataExplainer
 								manualPathVocab={manualPathVocab}
 								classesList={classesList}
 								propData={propertiesList}
 							/>
-						)}/>
+						)} />
 						<Route path="/v2/*" render={() => (
 							<Details
 								manualPathVocab={manualPathVocab}
@@ -122,6 +122,5 @@ export function App() {
 				</div>
 			</RoutesContextProvider>
 		</Router>
-
 	)
 }

@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		table: {
 			width: '100%',
-			border: '1px solid rgb(124, 129, 141)'
+			border: '1px solid rgb(224, 224, 224)'
 		},
 		th: {
 			padding: 15,
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		inputTd: {
 			padding: 0,
-			border: '1px solid rgb(12, 118, 203)'
+			border: '1px solid #7955ff'
 		},
 		input: {
 			width: '100%',
@@ -92,6 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			paddingRight: 10
 		},
 		textRow: {
+			background: '#fff',
 			'&:nth-child(2n)': {
 				background: 'rgb(245, 245, 245)'
 			}
@@ -107,7 +108,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			}
 		},
 		link: {
-			color: 'rgb(0, 123, 255)',
+			color: '#7955ff',
 			textDecoration: 'none',
 			'&:hover': {
 				textDecoration: 'underline'
@@ -164,7 +165,7 @@ const Table: React.FC<TableProps> = (props) => {
 		<div className={classes.tableWrapper}>
 			<MuiTable className={classes.table}>
 				<MuiTableHead>
-					<MuiTableRow>
+					<MuiTableRow className={classes.textRow}>
 						{headers.map(item => {
 							return (
 								<MuiTableCell
@@ -184,7 +185,7 @@ const Table: React.FC<TableProps> = (props) => {
 					</MuiTableRow>
 				</MuiTableHead>
 				<MuiTableBody>
-					<MuiTableRow>
+					<MuiTableRow className={classes.textRow}>
 						{headers.map(item => {
 							return (
 								<MuiTableCell

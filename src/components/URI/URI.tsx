@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) =>
 		},
 		link: {
 			fontSize: 14,
-			color: 'rgb(0, 149, 255)'
+			color: '#7955ff'
         },
         iconButtonCopy: {
 			padding: 2,

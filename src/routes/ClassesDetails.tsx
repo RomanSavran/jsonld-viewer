@@ -87,9 +87,10 @@ const useStyles = makeStyles((theme) =>
     },
     tabRoot: {
       minWidth: 'auto',
-      textTransform: 'none',
+      textTransform: 'capitalize',
       padding: '15px 25px',
-      color: '#4C4C51',
+      color: '#fff',
+      opacity: 1,
       transition: 'color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
       [theme.breakpoints.down('md')]: {
         padding: '10px'
@@ -106,20 +107,19 @@ const useStyles = makeStyles((theme) =>
     tabSelected: {
       color: '#fff',
       [theme.breakpoints.down('md')]: {
-        background: '#0095FF',
+        background: '#1e1540',
         transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
         outline: 'none'
       }
     },
     tabsRoot: {
-      borderBottom: '2px solid #0095ff',
       [theme.breakpoints.down('md')]: {
         border: 'none'
       }
     },
     tabsIndicator: {
-      height: '100%',
-      background: '#0095FF',
+      height: 2,
+      background: '#fff',
       [theme.breakpoints.down('md')]: {
         display: 'none'
       }
@@ -233,7 +233,7 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
       setHasError(true);
     }
     /* eslint-disable-next-line */
-  }, [location.pathname]);
+  }, [pathname]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     const newPath = `/v2/${tabValueToPathName(newValue)}/${getDataProductPath(path, newValue, id, manualPathVocab)}`.concat(

@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme: Theme) =>
 		h2: {
 			fontSize: 30,
 			fontWeight: 600,
-			lineHeight: '37px',
+            lineHeight: '37px',
+            color: '#fff',
 			textTransform: 'capitalize',
 			[theme.breakpoints.down('md')]: {
 				fontSize: 19

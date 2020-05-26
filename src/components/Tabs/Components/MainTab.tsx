@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		link: {
 			fontSize: 14,
-			color: 'rgb(0, 149, 255)'
+			color: '#7955ff'
 		},
 		iconButton: {
 			padding: 2
@@ -51,7 +51,8 @@ const useStyles = makeStyles((theme: Theme) =>
 			marginBottom: 10,
 			fontSize: 23,
 			fontWeight: 600,
-			lineHeight: '28px'
+			lineHeight: '28px',
+			color: '#fff',
 		},
 		chevronWrapper: {
 			display: 'flex',
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		chevron: {
 			fontSize: '2.3rem',
-			color: '#000',
+			color: '#fff',
 			transition: '.2s linear'
 		},
 		chevronOpen: {
@@ -72,7 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			justifyContent: 'space-between',
 			alignItems: 'center',
 			padding: '13px 23px',
-			background: 'rgb(21, 72, 109)'
+			background: '#1e1540'
 		},
 		definitionTopLeft: {
 			fontSize: 14,
@@ -87,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			overflow: 'hidden',
 			overflowX: 'auto',
 			overflowY: 'auto',
-			color: 'rgb(12, 77, 123)',
+			color: '#1e1540',
 			[theme.breakpoints.down('md')]: {
 				padding: 10,
 				maxHeight: 500
@@ -95,23 +96,24 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		body: {
 			marginBottom: 20,
-			background: 'linear-gradient(0deg,rgb(235, 240, 248),rgb(235, 240, 248)),rgb(29, 37, 72)'
+			background: '#eaf5ff'
 		},
 		downloadBtn: {
 			padding: '4px 9px',
 			fontSize: 14,
-			background: 'rgb(31, 91, 134)',
-			color: 'rgb(255, 255, 255)',
+			background: '#7955ff',
+			color: '#fff',
 			cursor: 'pointer',
 			textAlign: 'center',
 			transition: '.2s linear',
 			'&:hover': {
-				background: 'rgb(32, 178, 170)'
+				background: 'rgb(194,178,255)'
 			}
 		},
 		markdown: {
 			padding: 20,
 			border: '2px solid rgb(235, 240, 248)',
+			background: '#eaf5ff',
 			'& ul': {
 				marginTop: 0,
 				marginBottom: '1rem',
@@ -156,7 +158,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				}
 			},
 			'& a': {
-				color: 'rgb(0, 123, 255)',
+				color: '#7955ff',
 				textDecoration: 'none',
 				'&:hover': {
 					textDecoration: 'underline'

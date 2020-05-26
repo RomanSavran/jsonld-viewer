@@ -318,11 +318,14 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
     const id = result
       .split('/')
       .filter((s: string) => !!s)
-      .pop();
+      .pop()
+      .replace(/DataProductOutput|DataProductParameters/, 'DataProductContext');
+    console.log(id);
     const currentClass = classesList.find(cls => {
       const isDataProduct = cls.id.includes('DataProductContext');
 
       if (isDataProduct) {
+        console.log(cls.id)
        return manualPathVocab[cls.id] === id; 
       }
       return cls.id === id
@@ -372,6 +375,8 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
   if (currentClass) {
     currentId = currentClass.id in manualPathVocab ? manualPathVocab[currentClass.id] : currentClass.id;
   }
+
+  console.log(currentClass);
   
   return (
     <div className={classes.blockWrapper}>

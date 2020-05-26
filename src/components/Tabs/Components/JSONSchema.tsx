@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
             color: 'rgb(33, 37, 41)',
             transition: '.2s linear',
             '&:hover': {
-                color: 'rgb(0, 149, 255)'
+                color: '#7955ff'
             }
         },
         iconCopy: {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         link: {
             fontSize: 14,
-            color: 'rgb(0, 149, 255)'
+            color: '#7955ff'
         },
     })
 );

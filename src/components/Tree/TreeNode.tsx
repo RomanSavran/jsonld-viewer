@@ -9,8 +9,18 @@ import TreeNodeElement from './TreeNodeElement';
 const useStyles = makeStyles(theme => ({
 	ul: {
 		margin: 0,
-		paddingLeft: 20,
-		listStyle: 'none'
+		paddingLeft: 10,
+		listStyle: 'none',
+	},
+	border: {
+		position: 'relative',
+		'&::before': {
+			content: "''",
+			position: 'absolute',
+			width: 2,
+			height: '100%',
+			background: '#7955ff'
+		}
 	},
 	filteredUl: {
 		paddingLeft: 0
@@ -20,18 +30,20 @@ const useStyles = makeStyles(theme => ({
 type TreeNodeType = {
 	node: NodeType,
 	filter: string,
-	tree: any
+	tree: any,
+	withBorder?: boolean
 }
 
 const TreeNode: React.FC<TreeNodeType> = ({
 	node,
 	filter,
-	tree
+	tree,
+	withBorder
 }) => {
 	const classes = useStyles();
 	return (
 		<ul
-			className={clsx(classes.ul, {
+			className={clsx(classes.ul, withBorder ? classes.border : null, {
 				[classes.filteredUl]: !!filter
 			})}
 		>

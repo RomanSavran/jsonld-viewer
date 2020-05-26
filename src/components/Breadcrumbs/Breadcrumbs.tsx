@@ -14,15 +14,15 @@ const useStyles = makeStyles((theme) => ({
         padding: '8px 20px',
         fontSize: 16,
         textTransform: 'capitalize',
-        background: 'rgb(21, 72, 109)',
+        background: 'rgba(30, 21, 64, .5)',
     },
     link: {
         fontSize: 'inherit',
-        color: 'rgb(145, 157, 182)',
+        color: '#fff',
         textDecoration: 'none',
     },
     typography: {
-        color: 'rgb(255, 255, 255)'
+        color: 'rgb(194,178,255)'
     },
     ol: {
         '& li:nth-last-child(2) svg': {
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
     separator: {
         '& svg': {
-            fill: 'rgb(145, 157, 182)'
+            fill: '#fff'
         }
     }
 }));

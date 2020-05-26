@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
             fontSize: 30,
             fontWeight: 600,
             lineHeight: '37px',
+            color: "#fff",
             textTransform: 'capitalize',
             [theme.breakpoints.down('md')]: {
                 fontSize: 20
@@ -89,7 +90,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         link: {
             fontSize: 14,
-            color: 'rgb(0, 149, 255)',
+            color: '#7955ff',
             [theme.breakpoints.down('md')]: {
                 fontSize: 12
             }

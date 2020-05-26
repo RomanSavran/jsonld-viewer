@@ -8,7 +8,7 @@ import {
     Theme,
     Collapse
 } from '@material-ui/core';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo-wide.png';
 import Hamburger from '../Hamburger';
 import LanguagePicker from '../LanuagePicker';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 const useStyles = makeStyles((theme: Theme) => ({
     header: {
         padding: '15px 36px',
-        background: 'rgb(8, 44, 70)',
+        background: '#1e1540',
         [theme.breakpoints.down('md')]: {
             padding: '5px 20px'
         }
@@ -79,10 +79,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             left: 0,
             width: '100%',
             height: 2,
-            background: 'rgb(0, 149, 255)'
+            background: '#fff'
         },
         '&:hover': {
-            color: 'rgb(0, 149, 255)'
+            color: '#7955ff'
         },
         [theme.breakpoints.down('md')]: {
             padding: '10px 5px'

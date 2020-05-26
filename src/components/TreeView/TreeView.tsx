@@ -21,7 +21,8 @@ const useStyles = makeStyles(theme => ({
 		paddingLeft: 15,
 		paddingRight: 15,
 		fontSize: 15,
-		border: '1px solid rgb(196, 203, 217)',
+		background: '#fff',
+		borderRadius: 20,
 		color: 'rgb(70, 69, 69)',
 		boxSizing: 'border-box'
 	}
