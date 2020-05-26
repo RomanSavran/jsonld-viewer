@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
     block: {
       marginBottom: 20,
       padding: 20,
-      border: '1px solid rgb(12, 118, 203)',
+      border: '1px solid #eaf5ff',
       borderRadius: 4,
       '&:last-child': {
         marginBottom: 0
