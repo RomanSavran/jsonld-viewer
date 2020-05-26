@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       margin: 0,
-      marginBottom: 20
+      marginBottom: 20,
+      color: '#fff',
     },
     iconButton: {
       padding: 2
@@ -33,10 +34,10 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 20,
       fontFamily: 'Roboto',
       fontWeight: 300,
-      background: 'linear-gradient(0deg,rgb(235, 240, 248),rgb(235, 240, 248)),rgb(29, 37, 72)',
+      background: '#eaf5ff',
       border: '1px solid transparent',
       boxSizing: 'border-box',
-      color: 'rgb(12, 77, 123)',
+      color: '#1e1540',
       resize: 'vertical',
       '&:focus': {
         border: '1px solid rgb(12, 118, 203)',
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'block',
       margin: '0 auto',
       marginTop: 20,
-      background: 'rgb(21, 72, 109)',
+      background: '#7955ff',
       borderRadius: 4,
       color: '#fff',
       '&:hover': {
@@ -320,7 +321,6 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
       .filter((s: string) => !!s)
       .pop()
       .replace(/DataProductOutput|DataProductParameters/, 'DataProductContext');
-    console.log(id);
     const currentClass = classesList.find(cls => {
       const isDataProduct = cls.id.includes('DataProductContext');
 
@@ -376,8 +376,6 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
     currentId = currentClass.id in manualPathVocab ? manualPathVocab[currentClass.id] : currentClass.id;
   }
 
-  console.log(currentClass);
-  
   return (
     <div className={classes.blockWrapper}>
       <div className={classes.block}>
