@@ -54,14 +54,21 @@ const useStyles = makeStyles((theme: Theme) =>
 			'& > .active': {
 				color: 'rgb(194,178,255)'
 			},
+			'&:hover': {
+				'& svg': {
+					opacity: 1
+				}
+			}
 		},
 		chevron: {
+			marginRight: 5,
 			color: '#fff'
 		},
 		chevronOpen: {
 			transform: 'rotate(180deg)'
 		},
 		copyIcon: {
+			opacity: 0,
 			fontSize: '0.8rem',
 			color: '#fff',
 			cursor: 'pointer'

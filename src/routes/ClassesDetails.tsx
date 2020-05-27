@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) =>
     tabWrapper: {
       position: 'relative',
       zIndex: 999,
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: 600,
       lineHeight: '12px',
       fontFamily: 'Lato',
@@ -318,8 +318,8 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
                   indicator: classes.tabsIndicator,
                   scrollButtons: classes.scrollButtons
                 }}
-                variant="scrollable"
-                scrollButtons="on"
+                variant={isDataProduct ? "scrollable" : "standard"}
+                scrollButtons={isDataProduct ? "on" : "auto"}
                 value={tabValue}
                 onChange={handleTabChange}
                 aria-label="Tabs"

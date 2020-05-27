@@ -37,6 +37,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& > .active': {
       color: 'rgb(194,178,255)'
     },
+    '&:hover': {
+      '& svg': {
+        opacity: 1
+      }
+    }
   },
   link: {
     paddingLeft: 5,
@@ -57,15 +62,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   chevron: {
     width: 18,
     height: 18,
+    marginRight: 5,
     color: '#fff'
   },
   chevronOpen: {
     transform: 'rotate(180deg)'
   },
   copyIcon: {
+    opacity: 0,
     fontSize: '0.8rem',
     color: '#fff',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
 }))
 
@@ -109,16 +116,6 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
           >
             {node.id}
           </NavLink>
-          <CopyTooltip
-            placement="top"
-            copyText={`${window.location.origin}${node.path}`}
-          >
-            <FileCopyIcon
-              classes={{
-                root: classes.copyIcon
-              }}
-            />
-          </CopyTooltip>
           {
             node.children.length && !filter ? (
               <KeyboardArrowDownIcon
@@ -129,6 +126,16 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
               />
             ) : null
           }
+          <CopyTooltip
+            placement="top"
+            copyText={`${window.location.origin}${node.path}`}
+          >
+            <FileCopyIcon
+              classes={{
+                root: classes.copyIcon
+              }}
+            />
+          </CopyTooltip>
         </div>
       ) : null}
       {

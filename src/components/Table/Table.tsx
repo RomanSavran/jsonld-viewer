@@ -120,17 +120,21 @@ const useStyles = makeStyles((theme: Theme) =>
 			color: '#7955ff',
 			textDecoration: 'none',
 			'&:hover': {
-				textDecoration: 'underline'
+				textDecoration: 'underline',
 			}
 		},
 		copyIcon: {
+			opacity: 0,
 			fontSize: '0.8rem',
 			color: '#1e1540',
 			cursor: 'pointer'
 		},
 		copyWrapper: {
-			display: 'flex',
-			alignItems: 'center'
+			display: 'inline-flex',
+			alignItems: 'center',
+			'&:hover svg': {
+				opacity: 1
+			}
 		}
 	})
 );
