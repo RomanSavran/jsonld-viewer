@@ -322,10 +322,9 @@ const DataExplainer: React.FC<DataExplainerProps> = ({
       .pop()
       .replace(/DataProductOutput|DataProductParameters/, 'DataProductContext');
     const currentClass = classesList.find(cls => {
-      const isDataProduct = cls.id.includes('DataProductContext');
+      const isDataProduct = cls.id.includes('DataProductContext') && id !== 'DataProductContext';
 
       if (isDataProduct) {
-        console.log(cls.id)
        return manualPathVocab[cls.id] === id; 
       }
       return cls.id === id

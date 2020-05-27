@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         text: {
             margin: 0,
-            fontSize: 14,
+            fontSize: 16,
             color: 'rgb(49, 49, 49)'
         },
 	}),

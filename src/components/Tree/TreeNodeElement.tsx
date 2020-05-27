@@ -18,19 +18,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingLeft: 10,
   },
   filteredLi: {
-    '&::before': {
-      top: -11
-    },
-    '&:last-child': {
-      '&::before': {
-        height: '100%'
-      }
-    }
+    paddingLeft: 0
   },
   strokeWrapper: {
     position: 'relative',
     display: 'inline-flex',
-    justifyContent: 'flex-end',
     alignItems: 'center',
     padding: '3px 0',
     cursor: 'pointer',
@@ -127,7 +119,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
             ) : null
           }
           <CopyTooltip
-            placement="top"
+            placement="right"
             copyText={`${window.location.origin}${node.path}`}
           >
             <FileCopyIcon

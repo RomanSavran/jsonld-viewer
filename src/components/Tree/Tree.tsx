@@ -122,7 +122,7 @@ const Tree: React.FC<TreeTypes> = ({
 								exact
 							>{id}</NavLink>
 							<CopyTooltip
-								placement="top"
+								placement="right"
 								copyText={`${window.location.origin}${node.path}`}
 							>
 								<FileCopyIcon

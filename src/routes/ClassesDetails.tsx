@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) =>
     tabWrapper: {
       position: 'relative',
       zIndex: 999,
-      fontSize: 13,
+      fontSize: 12,
       fontWeight: 600,
       lineHeight: '12px',
       fontFamily: 'Lato',
