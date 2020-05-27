@@ -14,7 +14,9 @@ import { modifySchemaValidateError } from '../utils/helpers';
 import { RoutesContext } from '../context/RoutesContext';
 import clsx from 'clsx';
 import P from '../utils/platform-helper';
-import { extractTextForPropertyGrid } from '../utils/helpers';
+import { 
+  extractTextForPropertyGrid, 
+} from '../utils/helpers';
 import Info from '../components/Info';
 
 const useStyles = makeStyles((theme: Theme) =>

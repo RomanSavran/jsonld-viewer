@@ -124,7 +124,7 @@ export function App() {
 				<div style={{visibility: "collapse"}} className="wrap-div">
 					<div className="cont">
 						<div className="div-center-wrapper-button">
-							Improvement Suggestion? Or a New Ontology
+							Are you in need of a new ontology or have other suggestions?
 						</div>
 						<div className="button-wrapper">
 							<a 
