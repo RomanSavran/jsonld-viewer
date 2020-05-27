@@ -97,7 +97,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         downloadBtn: {
             padding: '4px 9px',
-            fontSize: 14,
+            fontSize: 15,
+            fontFamily: 'Lato, sans-serif',
             background: '#7955ff',
             color: 'rgb(255, 255, 255)',
             cursor: 'pointer',
@@ -136,14 +137,14 @@ const CopyBtn: React.FC<CopyBtnType> = ({ classes, children, ...rest }) => {
 type ContentViewerTypes = {
     content: any,
     fileName: string,
-    playground: boolean,
+    playground?: boolean,
     title?: string,
     subclasses?: boolean
 }
 
 const ContentViewer: React.FC<ContentViewerTypes> = ({
     content,
-    playground,
+    playground = false,
     fileName,
     title = 'Implementation',
     subclasses = false

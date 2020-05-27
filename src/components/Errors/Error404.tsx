@@ -31,14 +31,18 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         h1: {
             fontSize: 35,
-            fontFamily: 'Montserrat'
+            fontFamily: 'Lato',
+            color: '#fff'
         },
         h4: {
             fontSize: 25,
-            fontFamily: 'Montserrat'
+            fontFamily: 'Lato',
+            color: '#fff'
         },
         subtitle: {
-            fontFamily: 'Montserrat'
+            fontFamily: 'Lato',
+            fontSize: 18,
+            color: '#fff'
         },
         buttonContainer: {
             marginTop: 48,

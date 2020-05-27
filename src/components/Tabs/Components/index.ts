@@ -1,5 +1,4 @@
 import GeneralInformation from './GeneralInformation';
-import MainTab from './MainTab';
 import Context from './Context';
 import ClassDefinition from './ClassDefinition';
 import Vocabulary from './Vocabulary';
@@ -20,7 +19,6 @@ export {
     Vocabulary,
     ClassDefinition,
     GeneralInformation, 
-    MainTab,
     Context,
     JSONSchema,
     ParametersContext,

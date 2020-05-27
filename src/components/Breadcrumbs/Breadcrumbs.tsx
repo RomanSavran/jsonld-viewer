@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import { RoutesContext } from '../../context/RoutesContext';
 import {
     Breadcrumbs as MuiBreadcrumbs,
-    Typography,
     makeStyles
 } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -13,6 +12,8 @@ const useStyles = makeStyles((theme) => ({
     breadcrumbs: {
         padding: '8px 20px',
         fontSize: 16,
+        fontFamily: 'Lato, sans-serif',
+        fontWeight: 400,
         textTransform: 'capitalize',
         background: 'rgba(30, 21, 64, .5)',
     },
@@ -22,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
         textDecoration: 'none',
     },
     typography: {
+        margin: 0,
+        padding: 0,
+        fontSize: 'inherit',
         color: 'rgb(194,178,255)'
     },
     ol: {
@@ -85,13 +89,12 @@ const Breadcrumbs: React.FC = () => {
                 const label: string = t(path.split('-').join(' '));
 
                 return last ? (
-                    <Typography
+                    <p
                         className={classes.typography}
-                        color="textPrimary"
                         key={to}
                     >
                         {label}
-                    </Typography>
+                    </p>
                 ) :  (
                     <Link 
                         to={to} 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Spinner from '../../Spinner';
 import SystemAPI from '../../../services/api';
-import MainTab from './MainTab';
+import URI from '../../URI';
+import MarkdownPT from '../../Markdown';
+import ContentViewer from '../../ContentViewer';
 import mdFileCV from '../../../assets/context.md';
-import sizeof from 'object-sizeof';
 import { Error404 } from '../../Errors';
 
 type ContextProps = {
@@ -12,8 +13,6 @@ type ContextProps = {
 
 type ContextStateTypes = {
     content: any,
-    size: string,
-    sloc: number,
     loading: boolean,
     error: boolean
 }
@@ -24,8 +23,6 @@ const Context: React.FC<ContextProps> = (props) => {
     } = props;
     const [value, setValue] = useState<ContextStateTypes>({
         content: '',
-        size: '',
-        sloc: 0,
         loading: true,
         error: false
     });
@@ -45,12 +42,8 @@ const Context: React.FC<ContextProps> = (props) => {
                             error: true
                         }))
                     } else {
-                        const sloc = JSON.stringify(data, undefined, 2);
-                        const size = (sizeof(data) / 1000).toFixed(2);
                         setValue({
                             content: data,
-                            size,
-                            sloc: sloc.split('\n').length,
                             loading: false,
                             error: false
                         })
@@ -84,15 +77,24 @@ const Context: React.FC<ContextProps> = (props) => {
     if (value.error) return <Error404 />
     if (value.loading && !value.error) return <Spinner />
 
+    const {content} = value;
+
     return (
-        <MainTab
-            uri={window.location.href}
-            size={value.size}
-            sloc={value.sloc}
-            content={value.content}
-            fileName={`Context-${id}`}
-            markdown={mdFile}
-        />
+        <div>
+			<URI 
+				uri={[{
+                    uri: window.location.href,
+                    title: 'URI'
+                }]}
+			/>
+			<ContentViewer
+				content={content}
+				fileName={`Context-${id}`}
+			/>
+			<MarkdownPT 
+				source={mdFile}
+			/>
+		</div>
     )
 }
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Spinner from '../../Spinner';
 import SystemAPI from '../../../services/api';
-import MainTab from './MainTab';
 import mdFileCV from '../../../assets/context.md';
-import sizeof from 'object-sizeof';
 import { Error404 } from '../../Errors';
+import URI from '../../URI';
+import MarkdownPT from '../../Markdown';
+import ContentViewer from '../../ContentViewer';
 
 type VocabularyProps = {
     path: string
@@ -12,8 +13,6 @@ type VocabularyProps = {
 
 type VocabularyStateTypes = {
     content: any,
-    size: string,
-    sloc: number,
     loading: boolean,
     error: boolean
 }
@@ -24,8 +23,6 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
     } = props;
     const [value, setValue] = useState<VocabularyStateTypes>({
         content: '',
-        size: '',
-        sloc: 0,
         loading: true,
         error: false
     });
@@ -45,12 +42,8 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
                                 error: true
                             }))
                         } else {
-                            const sloc = JSON.stringify(data, undefined, 2);
-                            const size = (sizeof(data) / 1000).toFixed(2);
                             setValue({
                                 content: data,
-                                size,
-                                sloc: sloc.split('\n').length,
                                 loading: false,
                                 error: false
                             })
@@ -60,8 +53,6 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
         } else {
             setValue({
                 content: {},
-                size: '0',
-                sloc: 0,
                 loading: false,
                 error: false
             })
@@ -87,15 +78,24 @@ const Vocabulary: React.FC<VocabularyProps> = (props) => {
     if (value.error) return <Error404 />
     if (value.loading && !value.error) return <Spinner />
 
+    const {content} = value;
+
     return (
-        <MainTab
-            uri={window.location.href}
-            size={value.size}
-            sloc={value.sloc}
-            content={value.content}
-            fileName={`Vocabulary-${id}`}
-            markdown={mdFile}
-        />
+        <div>
+			<URI 
+				uri={[{
+                    uri: window.location.href,
+                    title: 'URI'
+                }]}
+			/>
+			<ContentViewer
+				content={content}
+				fileName={`Context-${id}`}
+			/>
+			<MarkdownPT 
+				source={mdFile}
+			/>
+		</div>
     )
 }
 

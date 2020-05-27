@@ -9,7 +9,7 @@ import {App} from './App';
 
 WebFont.load({
     google: {
-        families: ['Montserrat:300,400,600,700', 'Roboto:300,400,600,700', 'sans-serif']
+        families: ['Lato:300,400,600,700,800', 'Roboto:300,400,600,700', 'sans-serif']
     }
 })
 

@@ -19,6 +19,8 @@ import {
 } from '../../utils/helpers';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import CopyTooltip from '../CopyTooltip';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 type Header = {
 	id: string,
@@ -54,9 +56,9 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		th: {
 			padding: 15,
-			fontSize: 12,
+			fontSize: 13,
 			fontWeight: 600,
-			fontFamily: 'Montserrat, sans-serif',
+			fontFamily: 'Lato, sans-serif',
 			border: 'none',
 			borderRight: '1px solid rgb(224, 224, 224)',
 			'&:last-child': {
@@ -65,13 +67,19 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		inputTd: {
 			padding: 0,
-			border: '1px solid #7955ff'
+			border: '1px solid #7955ff',
+			'&:first-child': {
+				borderLeft: 'none'
+			},
+			'&:last-child': {
+				borderRight: 'none'
+			}
 		},
 		input: {
 			width: '100%',
 			height: 40,
 			fontSize: 12,
-			fontFamily: 'Montserrat, sans-serif',
+			fontFamily: 'Lato, sans-serif',
 			padding: '0 5px 0 10px',
 			[theme.breakpoints.down('md')]: {
 				fontSize: 16
@@ -99,8 +107,8 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		mainTd: {
 			padding: 15,
-			fontSize: 12,
-			fontFamily: 'Montserrat, sans-serif',
+			fontSize: 13,
+			fontFamily: 'Lato, sans-serif',
 			border: 'none',
 			borderRight: '1px solid rgb(224, 224, 224)',
 			'&:last-child': {
@@ -108,11 +116,21 @@ const useStyles = makeStyles((theme: Theme) =>
 			}
 		},
 		link: {
+			marginRight: 5,
 			color: '#7955ff',
 			textDecoration: 'none',
 			'&:hover': {
 				textDecoration: 'underline'
 			}
+		},
+		copyIcon: {
+			fontSize: '0.8rem',
+			color: '#1e1540',
+			cursor: 'pointer'
+		},
+		copyWrapper: {
+			display: 'flex',
+			alignItems: 'center'
 		}
 	})
 );
@@ -227,12 +245,22 @@ const Table: React.FC<TableProps> = (props) => {
 													key={header.id}
 												>
 													{header.id === 'id' ? (
-														<Link
-															className={classes.link}
-															to={element.url}
-														>
-															{_.get(element, `${header.id}`)}
-														</Link>
+														<div className={classes.copyWrapper}>
+															<Link
+																className={classes.link}
+																to={element.url}
+															>
+																{_.get(element, `${header.id}`)}
+															</Link>
+															<CopyTooltip 
+																copyText={`${window.location.origin}${element.url}`}
+																placement="top"
+															>
+																<FileCopyIcon classes={{
+																	root: classes.copyIcon
+																}}/>
+															</CopyTooltip>
+														</div>
 													) : header.id === 'domain' ? (
 														<div>
 															{element.domain.map((domain: {url: string, label: string}, idx: number, arr: any) => {

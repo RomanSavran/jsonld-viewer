@@ -9,6 +9,8 @@ import TreeNode from './TreeNode';
 import { NavLink } from 'react-router-dom';
 import { NodeType } from '../../utils/helpers';
 import clsx from 'clsx';
+import CopyTooltip from '../CopyTooltip';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,8 +36,9 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		link: {
 			paddingLeft: 5,
-			fontSize: 12,
-			fontFamily: 'Montserrat, sans-serif',
+			paddingRight: 5,
+			fontSize: 15,
+			fontFamily: 'Lato, sans-serif',
 			fontWeight: 400,
 			color: '#fff',
 			textDecoration: 'none',
@@ -57,7 +60,12 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		chevronOpen: {
 			transform: 'rotate(180deg)'
-		}
+		},
+		copyIcon: {
+			fontSize: '0.8rem',
+			color: '#fff',
+			cursor: 'pointer'
+		},
 	})
 )
 
@@ -89,17 +97,33 @@ const Tree: React.FC<TreeTypes> = ({
 				const isExpand = id in treeState ? treeState[id] : false;
 				return (
 					<li className={classes.li} key={node.id}>
-						<div className={classes.strokeWrapper} onClick={handleChangeParentStatus(node.id, !isExpand)}>
+						<div className={classes.strokeWrapper}>
 							<span
+								onClick={handleChangeParentStatus(node.id, !isExpand)}
 								className={classes.square}
 							>
-								<KeyboardArrowDownIcon 
+								<KeyboardArrowDownIcon
 									className={clsx(classes.chevron, {
 										[classes.chevronOpen]: isExpand
 									})}
 								/>
 							</span>
-							<NavLink className={classes.link} to={node.path} exact>{id}</NavLink>
+							<NavLink 
+								onClick={handleChangeParentStatus(node.id, !isExpand)}
+								className={classes.link} 
+								to={node.path} 
+								exact
+							>{id}</NavLink>
+							<CopyTooltip
+								placement="top"
+								copyText={`${window.location.origin}${node.path}`}
+							>
+								<FileCopyIcon
+									classes={{
+										root: classes.copyIcon
+									}}
+								/>
+							</CopyTooltip>
 						</div>
 						{
 							isExpand || !!filter ? (

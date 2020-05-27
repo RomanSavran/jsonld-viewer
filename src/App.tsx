@@ -26,6 +26,7 @@ import TopBar from './components/TopBar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { Error404 } from './components/Errors';
 import InitLoader from './components/InitLoader';
+import Footer from './components/Footer';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -120,6 +121,21 @@ export function App() {
 						<Redirect to="/v2/404" />
 					</Switch>
 				</div>
+				<div style={{visibility: "collapse"}} className="wrap-div">
+					<div className="cont">
+						<div className="div-center-wrapper-button">
+							Improvement Suggestion? Or a New Ontology
+						</div>
+						<div className="button-wrapper">
+							<a 
+								className="button"
+								href="https://github.com/PlatformOfTrust/collected-feedback/issues/new?assignees=&labels=ontology-viewer&template=ontology-wishlist.md&title=%5bOntology%20Viewer%3A%20Wishlist%20or%20Issue%5d">
+									Tell us in GitHub
+							</a>
+						</div>
+					</div>
+				</div>
+				<Footer />
 			</RoutesContextProvider>
 		</Router>
 	)

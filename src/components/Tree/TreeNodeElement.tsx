@@ -5,9 +5,11 @@ import {
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import TreeNode from './TreeNode';
-import {RoutesContext} from '../../context/RoutesContext';
+import { RoutesContext } from '../../context/RoutesContext';
 import clsx from 'clsx';
 import P from '../../utils/platform-helper';
+import CopyTooltip from '../CopyTooltip';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -38,8 +40,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   link: {
     paddingLeft: 5,
-    fontSize: 12,
-    fontFamily: 'Montserrat, sans-serif',
+    paddingRight: 5,
+    fontSize: 15,
+    fontFamily: 'Lato, sans-serif',
     fontWeight: 400,
     color: '#FFF',
     textDecoration: 'none',
@@ -58,7 +61,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   chevronOpen: {
     transform: 'rotate(180deg)'
-  }
+  },
+  copyIcon: {
+    fontSize: '0.8rem',
+    color: '#fff',
+    cursor: 'pointer'
+  },
 }))
 
 interface TreeNodeElementProps {
@@ -73,7 +81,7 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
   tree
 }) => {
   const classes = useStyles();
-  const {treeState, handleChangeTreeState} = useContext(RoutesContext);
+  const { treeState, handleChangeTreeState } = useContext(RoutesContext);
 
   const changeExpandStatus = (nodePath: string, status: boolean) => (event: React.MouseEvent<unknown>) => {
     handleChangeTreeState(nodePath, status)
@@ -89,9 +97,11 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
       })}
     >
       {id.toLowerCase().includes(filter) ? (
-        <div className={classes.strokeWrapper} onClick={changeExpandStatus(node.path, !isExpand)}>
+        <div className={classes.strokeWrapper}>
           <NavLink
+            title={node.id}
             to={node.path}
+            onClick={changeExpandStatus(node.path, !isExpand)}
             className={classes.link}
             isActive={(match, location) => {
               return P.getId(location.pathname) === id;
@@ -99,11 +109,24 @@ const TreeNodeElement: React.FC<TreeNodeElementProps> = ({
           >
             {node.id}
           </NavLink>
+          <CopyTooltip
+            placement="top"
+            copyText={`${window.location.origin}${node.path}`}
+          >
+            <FileCopyIcon
+              classes={{
+                root: classes.copyIcon
+              }}
+            />
+          </CopyTooltip>
           {
             node.children.length && !filter ? (
-              <KeyboardArrowDownIcon className={clsx(classes.chevron, {
-                [classes.chevronOpen]: isExpand
-              })}/>
+              <KeyboardArrowDownIcon
+                onClick={changeExpandStatus(node.path, !isExpand)}
+                className={clsx(classes.chevron, {
+                  [classes.chevronOpen]: isExpand
+                })}
+              />
             ) : null
           }
         </div>

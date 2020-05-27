@@ -99,26 +99,28 @@ const useStyles = makeStyles((theme) =>
     tabWrapper: {
       position: 'relative',
       zIndex: 999,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: 600,
       lineHeight: '12px',
-      fontFamily: 'Montserrat'
+      fontFamily: 'Lato',
+      textTransform: 'uppercase'
     },
     tabSelected: {
-      color: '#fff',
+      color: '#1e1540',
       [theme.breakpoints.down('md')]: {
-        background: '#1e1540',
+        background: '#fff',
         transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
         outline: 'none'
       }
     },
     tabsRoot: {
+      borderBottom: '2px solid #fff',
       [theme.breakpoints.down('md')]: {
         border: 'none'
       }
     },
     tabsIndicator: {
-      height: 2,
+      height: '100%',
       background: '#fff',
       [theme.breakpoints.down('md')]: {
         display: 'none'
@@ -128,6 +130,12 @@ const useStyles = makeStyles((theme) =>
       [theme.breakpoints.down('md')]: {
         display: 'flex',
         flexWrap: 'wrap'
+      }
+    },
+    scrollButtons: {
+      color: '#fff',
+      [theme.breakpoints.down('md')]: {
+        width: 20
       }
     }
   })
@@ -292,14 +300,14 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
       {shouldTreeView && isDesktop ? (
         <Grid
           item
-          xs={3}
+          xs={4}
         >
           <TreeView classesList={classesList} />
         </Grid>
       ) : null}
       <Grid
         item
-        xs={shouldTreeView && isDesktop ? 9 : 12}
+        xs={shouldTreeView && isDesktop ? 8 : 12}
       >
         {(initId.current !== id) ? <Spinner /> : hasError ? <Error404 /> :
           (
@@ -308,9 +316,10 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
                 classes={{
                   root: classes.tabsRoot,
                   indicator: classes.tabsIndicator,
-                  flexContainer: classes.tabsFlexContainer
+                  scrollButtons: classes.scrollButtons
                 }}
-                variant="standard"
+                variant="scrollable"
+                scrollButtons="on"
                 value={tabValue}
                 onChange={handleTabChange}
                 aria-label="Tabs"

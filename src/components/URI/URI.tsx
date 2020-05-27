@@ -108,6 +108,7 @@ const URI: React.FC<URIProps> = ({
                             href={item.uri}
                             target="_blank"
                             rel="noopener noreferrer"
+                            title={item.uri}
                         >
                             {item.uri}
                         </a>
