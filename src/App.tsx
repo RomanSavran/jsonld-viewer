@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -19,6 +19,7 @@ import {
 } from '@material-ui/core';
 import ServiceAPI from './services/api';
 import { Theme } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import {
 	getAppData,
 } from './utils/helpers';
@@ -47,6 +48,8 @@ export function App() {
 		hasError: false
 	});
 
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		let mounted = false;
 
@@ -73,69 +76,71 @@ export function App() {
 		}
 	}, []);
 
-	if (value.loading) return <InitLoader />
-
 	const { data } = value;
-	const { propertiesList, classesList, manualPathVocab } = getAppData(data);
+	const { propertiesList, classesList, manualPathVocab } = useMemo(() => getAppData(data), [data]);
 
 	return (
 		<Router>
 			<RoutesContextProvider>
-				<TopBar />
-				<Breadcrumbs />
-				<div className={classes.container}>
-					<Switch>
-						<Route exact path="/">
-							<Redirect to="/v2/" />
-						</Route>
-						<Route path="/v2/" exact render={() => (
-							<ClassesHigherarchy
-								classesList={classesList}
-							/>
-						)} />
-						<Route path="/v2/classes-grid" exact render={() => (
-							<ClassesGrid
-								classesList={classesList}
-							/>
-						)} />
-						<Route path="/v2/properties-grid" exact render={() => (
-							<PropertiesGrid
-								propertiesData={propertiesList}
-							/>
-						)} />
-						<Route path="/v2/data-explainer" exact component={() => (
-							<DataExplainer
-								manualPathVocab={manualPathVocab}
-								classesList={classesList}
-								propData={propertiesList}
-							/>
-						)} />
-						<Route path="/v2/*" render={() => (
-							<Details
-								manualPathVocab={manualPathVocab}
-								classesList={classesList}
-								propData={propertiesList}
-							/>
-						)} />
-						<Route path="/v2/404" exact component={Error404} />
-						<Redirect to="/v2/404" />
-					</Switch>
-				</div>
-				<div style={{visibility: "collapse"}} className="wrap-div">
-					<div className="cont">
-						<div className="div-center-wrapper-button">
-							Are you in need of a new ontology or have other suggestions?
+				{value.loading ? <InitLoader /> : (
+					<>
+						<TopBar />
+						<Breadcrumbs />
+						<div className={classes.container}>
+							<Switch>
+								<Route exact path="/">
+									<Redirect to="/v2/" />
+								</Route>
+								<Route path="/v2/" exact render={() => (
+									<ClassesHigherarchy
+										classesList={classesList}
+									/>
+								)} />
+								<Route path="/v2/classes-grid" exact render={() => (
+									<ClassesGrid
+										classesList={classesList}
+									/>
+								)} />
+								<Route path="/v2/properties-grid" exact render={() => (
+									<PropertiesGrid
+										propertiesData={propertiesList}
+									/>
+								)} />
+								<Route path="/v2/data-explainer" exact component={() => (
+									<DataExplainer
+										manualPathVocab={manualPathVocab}
+										classesList={classesList}
+										propData={propertiesList}
+									/>
+								)} />
+								<Route path="/v2/*" render={() => (
+									<Details
+										manualPathVocab={manualPathVocab}
+										classesList={classesList}
+										propData={propertiesList}
+									/>
+								)} />
+								<Route path="/v2/404" exact component={Error404} />
+								<Redirect to="/v2/404" />
+							</Switch>
 						</div>
-						<div className="button-wrapper">
-							<a 
-								className="button"
-								href="https://github.com/PlatformOfTrust/collected-feedback/issues/new?assignees=&labels=ontology-viewer&template=ontology-wishlist.md&title=%5bOntology%20Viewer%3A%20Wishlist%20or%20Issue%5d">
-									Tell us in GitHub
-							</a>
+						<div style={{ visibility: "collapse" }} className="wrap-div">
+							<div className="cont">
+								<div className="div-center-wrapper-button">
+									{t('Are you in need of a new ontology or have other suggestions?')}
+								</div>
+								<div className="button-wrapper">
+									<a
+										className="button"
+										href="https://github.com/PlatformOfTrust/collected-feedback/issues/new?assignees=&labels=ontology-viewer&template=ontology-wishlist.md&title=%5bOntology%20Viewer%3A%20Wishlist%20or%20Issue%5d">
+										{t('Tell us in GitHub')}
+									</a>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
-				<Footer />
+						<Footer />
+					</>
+				)}
 			</RoutesContextProvider>
 		</Router>
 	)

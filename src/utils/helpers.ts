@@ -76,21 +76,21 @@ function extractTextData<T extends object>(element: T, key: string, lang: 'en-us
 }
 
 export function modifyClassElement(classElement: any) {
+    console.log(classElement);
     const splitter = 'v2/Vocabulary/';
     const commentKey = 'http://www.w3.org/2000/01/rdf-schema#comment';
     const labelKey = 'http://www.w3.org/2000/01/rdf-schema#label';
     const parentKey = 'http://www.w3.org/2000/01/rdf-schema#subClassOf';
     const manualPathKey = 'https://standards.oftrust.net/v2/Vocabulary/manualPath';
-
     const partialPath: string = get(classElement, '@id').split(splitter).pop() || '';
-    const manualPath = has(classElement, manualPathKey) ? get(classElement, manualPathKey).pop()['@value'] : null;
+    const manualPath = has(classElement, manualPathKey) ? get(classElement, manualPathKey)[0]['@value'] : null;
     let id: string = partialPath.split('/').pop() || '';
     const isContext: boolean = partialPath
         .split('/')
         .some((s: string) => {
             return ['Identity', 'Link', 'DataProductContext', 'Annotation'].includes(s)
         });
-    const parentBody = has(classElement, parentKey) ? get(classElement, parentKey).pop() : null;
+    const parentBody = has(classElement, parentKey) ? get(classElement, parentKey)[0] : null;
     let parentText = parentBody ? (get(parentBody, '@id').split('/').pop() || '') : '';
 
     const labelEn = extractTextData(classElement, labelKey, 'en-us');
@@ -436,6 +436,14 @@ export function getAppData(data: any) {
     const propertiesList: Array<{ [key: string]: any }> = [];
     const otherList: IdElementType[] = [];
     const manualPathVocab: {[key: string]: string} = {}
+
+    if (!data) {
+        return {
+            classesList,
+            propertiesList,
+            manualPathVocab
+        }
+    }
 
     data.forEach((element: any) => {
         if ('@type' in element) {
