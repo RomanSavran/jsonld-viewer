@@ -76,7 +76,6 @@ function extractTextData<T extends object>(element: T, key: string, lang: 'en-us
 }
 
 export function modifyClassElement(classElement: any) {
-    console.log(classElement);
     const splitter = 'v2/Vocabulary/';
     const commentKey = 'http://www.w3.org/2000/01/rdf-schema#comment';
     const labelKey = 'http://www.w3.org/2000/01/rdf-schema#label';
