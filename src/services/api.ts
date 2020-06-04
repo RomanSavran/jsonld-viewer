@@ -1,8 +1,13 @@
-class GithubAPI {
+class ServiceAPI {
     private _baseLink: string = process.env.NODE_ENV === 'development' ? 'https://peaceful-springs-53690.herokuapp.com' : window.location.origin;
+    private cache = new Map();
 
     getData = async (path: string) => {
         const url = `${this._baseLink}${path}`;
+
+        if (this.cache.has(url))
+            return this.cache.get(url)
+
         const res = await fetch(url, {
             method: 'GET',
             cache: 'no-store',
@@ -12,7 +17,10 @@ class GithubAPI {
             return res.status
         }
 
-        return await res.json();
+        const body = await res.json(); 
+        this.cache.set(url, body);
+
+        return body;
     }
 
     getContextByLink = async (url: string) => {
@@ -89,4 +97,4 @@ class GithubAPI {
     }
 }
 
-export default new GithubAPI();
+export default new ServiceAPI();
