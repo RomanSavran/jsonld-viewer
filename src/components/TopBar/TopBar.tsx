@@ -32,9 +32,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'block',
         maxWidth: '100%',
         height: 'auto',
+        maxHeight: '100%',
         opacity: '0.7',
         [theme.breakpoints.down('md')]: {
             opacity: 1
+        },
+        [theme.breakpoints.down('sm')]: {
+            maxHeight: 56
         }
     },
     ul: {

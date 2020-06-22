@@ -318,8 +318,8 @@ const ClassesDetails: React.FC<ClassesDetailsProps> = ({
                   indicator: classes.tabsIndicator,
                   scrollButtons: classes.scrollButtons
                 }}
-                variant={isDataProduct ? "scrollable" : "standard"}
-                scrollButtons={isDataProduct ? "on" : "auto"}
+                variant={isDataProduct || !isDesktop ? "scrollable" : "standard"}
+                scrollButtons={isDataProduct || !isDesktop ? "on" : "auto"}
                 value={tabValue}
                 onChange={handleTabChange}
                 aria-label="Tabs"
