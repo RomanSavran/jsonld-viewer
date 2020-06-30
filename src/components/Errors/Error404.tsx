@@ -1,13 +1,9 @@
 import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/styles';
+import { makeStyles, createStyles } from '@material-ui/core';
 import {
-    Typography,
-    useTheme,
-    useMediaQuery,
     Theme
 } from '@material-ui/core';
-import errorImage from '../../assets/404.svg';
-import { useTranslation } from 'react-i18next';
+import errorImage from '../../assets/404.png';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -15,29 +11,49 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: 12,
             paddingTop: 24,
             display: 'flex',
-            flexDirection: 'column',
-            alignContent: 'center'
+            alignContent: 'center',
+            justifyContent: 'space-around',
+            [theme.breakpoints.down('md')]: {
+                flexDirection: 'column'
+            }
         },
         imageContainer: {
             marginTop: 48,
             display: 'flex',
             justifyContent: 'center'
         },
+        textRoot: {
+            [theme.breakpoints.down('md')]: {
+                textAlign: 'center'
+            }
+        },
         image: {
+            display: 'block',
             maxWidth: '100%',
-            width: 560,
-            maxHeight: 300,
-            height: 'auto'
+            height: 'auto',
+            [theme.breakpoints.down('sm')]: {
+                maxWidth: '50%'
+            },
+            [theme.breakpoints.down('xs')]: {
+                maxWidth: '100%'
+            }
         },
         h1: {
-            fontSize: 35,
+            margin: 0,
+            fontSize: 65,
             fontFamily: 'Lato',
-            color: '#fff'
+            color: '#fff',
+            [theme.breakpoints.down('md')]: {
+                fontSize: 35
+            }
         },
         h4: {
             fontSize: 25,
             fontFamily: 'Lato',
-            color: '#fff'
+            color: '#fff',
+            [theme.breakpoints.down('md')]: {
+                fontSize: 18
+            }
         },
         subtitle: {
             fontFamily: 'Lato',
@@ -54,35 +70,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Error404() {
     const classes = useStyles();
-    const theme: Theme = useTheme();
-    const mobileDevice: boolean = useMediaQuery(theme.breakpoints.down('sm'));
-    const {t} = useTranslation();
 
     return (
         <div
             className={classes.root}
             title="Error 404"
         >
-            <Typography
-                align="center"
-                variant={mobileDevice ? 'h4' : 'h1'}
-                classes={{
-                    h1: classes.h1,
-                    h4: classes.h4
-                }}
-            >
-                404: {t("Ooops, something went terribly wrong!")}
-            </Typography>
-            <Typography
-                align="center"
-                variant="subtitle2"
-                classes={{
-                    subtitle2: classes.subtitle
-                }}
-            >
-                {t("You either tried some shady route or you came here by mistake.")} 
-                {t("Whichever it is, try using the navigation")}
-            </Typography>
+            <div className={classes.textRoot}>
+                <p className={classes.h1}>Oh 4-0-No!</p>
+                <p className={classes.h4}>The page you were looking for is not here.</p>
+            </div>
             <div className={classes.imageContainer}>
                 <img
                     alt="Under development"

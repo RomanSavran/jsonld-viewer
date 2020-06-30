@@ -18,7 +18,7 @@ const PropertyDetails: React.FC<PropertyDetailsTypes> = ({classesList, propData}
     const {handleChangeCurrentPath} = useContext(RoutesContext);
 
     const id = P.getId(pathname);
-    const currentProperty = propData.find((item: any) => item.id === id);
+    const currentProperty = /Vocabulary/.test(pathname) ?  propData.find((item: any) => item.id === id) : null;
 
     useEffect(() => {
         window.scrollTo(0, 0);
