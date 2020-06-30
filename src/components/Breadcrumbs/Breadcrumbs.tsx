@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         fontFamily: 'Lato, sans-serif',
         fontWeight: 400,
-        textTransform: 'capitalize',
         background: 'rgba(30, 21, 64, .5)',
     },
     link: {
@@ -87,7 +86,9 @@ const Breadcrumbs: React.FC = () => {
                 let to = path === 'classes-hierarchy' ? `/v2/` : 
                     ['classes-grid', 'properties-grid', 'data-explainer'].includes(path) ? `/v2/${path}` : 
                     /Vocabulary/.test(fullPath) ? fullPath : `${fullPath}/`;
-                const label: string = t(path.split('-').join(' '));
+                const label: string = ['classes-hierarchy', 'classes-grid', 'properties-grid', 'data-explainer'].includes(path) ? 
+                    t(path.split('-').map((s: string) => s[0].toUpperCase() + s.substr(1)).join(' ')) :
+                    path
 
                 return last ? (
                     <p
