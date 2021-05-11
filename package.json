@@ -9,7 +9,7 @@
     "clsx": "^1.1.0",
     "downloadjs": "^1.4.7",
     "i18next": "^19.3.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "object-sizeof": "^1.5.3",
     "react": "^16.13.0",
     "react-app-polyfill": "^1.0.6",
